@@ -11,6 +11,7 @@ import {
   triggersFinishScreen,
   isFirstFinishMilestone 
 } from "../../domain/questRules";
+import { getFallbackAvatarUrl, UI_CONFIG } from "../../config/questConfig";
 
 interface IProps {
   currentUserId?: string;
@@ -44,11 +45,13 @@ export const UserPointer: FC<IProps> = ({
   const { taskNumber, name, imageUrl, socialNetworkPoint, id } = user;
 
   const handleImageError = () => {
-    // Use fallback avatar if image fails to load
-    setImgSrc("/fallback-avatar.svg");
+    // Use centralized fallback avatar if image fails to load
+    setImgSrc(getFallbackAvatarUrl());
   };
   const initialPosition =
-    totalCount < 10 ? { left: `${index * 10}px` } : { left: `${index * 2}px` };
+    totalCount < 10 
+      ? { left: `${index * UI_CONFIG.AVATAR_STACK_OFFSET_LARGE}px` } 
+      : { left: `${index * UI_CONFIG.AVATAR_STACK_OFFSET_SMALL}px` };
 
   const loggedUser = currentUserId === id;
 

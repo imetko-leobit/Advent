@@ -3,6 +3,7 @@ import { FC, useState } from "react";
 import { IUserInGroupData } from "../../consts";
 import { coloredPointers } from "../../consts/colors";
 import { calcAvatarPositionAndSize } from "../../helpers/calcAvatarSize";
+import { getFallbackAvatarUrl } from "../../config/questConfig";
 
 interface IProps {
   user: IUserInGroupData;
@@ -15,7 +16,8 @@ export const Pointer: FC<IProps> = ({ user, usersCount, index }) => {
   const [imgSrc, setImgSrc] = useState(user.imageUrl);
 
   const handleImageError = () => {
-    setImgSrc("/fallback-avatar.svg");
+    // Use centralized fallback avatar if image fails to load
+    setImgSrc(getFallbackAvatarUrl());
   };
 
   const calculateElementSize = () => {

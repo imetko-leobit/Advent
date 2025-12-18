@@ -70,8 +70,9 @@ export const API_CONFIG = {
 
   /**
    * Fallback avatar URL when employee photo is not available
+   * Note: Relative to base URL, actual file is in public/ directory
    */
-  FALLBACK_AVATAR_URL: "/fallback-avatar.png",
+  FALLBACK_AVATAR_URL: "fallback-avatar.svg",
 } as const;
 
 /**
@@ -135,7 +136,8 @@ export function getEmployeePhotoUrl(userId: string): string {
 
 /**
  * Helper function to get fallback avatar URL
+ * Returns full URL including base path
  */
 export function getFallbackAvatarUrl(): string {
-  return API_CONFIG.FALLBACK_AVATAR_URL;
+  return import.meta.env.BASE_URL + API_CONFIG.FALLBACK_AVATAR_URL;
 }

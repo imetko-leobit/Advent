@@ -4,6 +4,8 @@
 **Codebase:** Well Being Quest (Advent App)  
 **Assessment Type:** Critical Technical Analysis
 
+> **Note:** This analysis includes line number references that were accurate at the time of assessment (commit ce2656a). Line numbers may shift as the code evolves. Use the code snippets and file paths as primary references.
+
 ---
 
 ## Executive Summary

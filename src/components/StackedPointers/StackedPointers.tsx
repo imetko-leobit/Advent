@@ -3,6 +3,8 @@ import { UserPointer } from "./UserPointer";
 import { motion } from "framer-motion";
 import { IMapTaskPosition, IUserInGroupData } from "../../consts";
 import { useAuth } from "react-oidc-context";
+import { triggersFinishScreen } from "../../domain/questRules";
+import { UI_CONFIG } from "../../config/questConfig";
 
 interface IProps {
   stackedPointersRef: RefObject<HTMLDivElement>;
@@ -37,7 +39,8 @@ export const StackedPointers: FC<IProps> = ({
 
   const filterUserPointers = () => {
     const loggedUserId = user?.profile.sub;
-    if (group.taskNumber === 9 || group.taskNumber === 14) {
+    // For finish screen positions, separate logged user to render them last with animation
+    if (triggersFinishScreen(group.taskNumber)) {
       const filteredUsers = group.users.filter((u) => u.id !== loggedUserId);
       const findLoggedUser = group.users.find((u) => u.id == loggedUserId);
       setUsersWithoutLoggedUser(filteredUsers);
@@ -75,7 +78,7 @@ export const StackedPointers: FC<IProps> = ({
           user={u}
           index={index}
           isHover={
-            hoverIndex === groupIndex && isHover && group.users.length < 6
+            hoverIndex === groupIndex && isHover && group.users.length <= UI_CONFIG.MAX_AVATARS_BEFORE_MODAL
           }
           totalCount={usersWithoutLoggedUser.length}
           parentDivHeight={parentDivHeight}
@@ -92,7 +95,7 @@ export const StackedPointers: FC<IProps> = ({
           user={loggedUser}
           index={0}
           isHover={
-            hoverIndex === groupIndex && isHover && group.users.length < 6
+            hoverIndex === groupIndex && isHover && group.users.length <= UI_CONFIG.MAX_AVATARS_BEFORE_MODAL
           }
           totalCount={1}
           parentDivHeight={parentDivHeight}

@@ -12,6 +12,8 @@ import { Girl } from "./Animation/Girl/Girl";
 import { PointersModal } from "./PointersModal/PointersModal";
 import { Step } from "./Step/Step";
 import { StackedPointers } from "./StackedPointers/StackedPointers";
+import { isFirstFinishMilestone } from "../domain/questRules";
+import { UI_CONFIG } from "../config/questConfig";
 
 interface IProps {
   tableData?: IMapTaskPosition[];
@@ -58,7 +60,7 @@ export const SVGMap: FC<IProps> = ({ tableData, setIsGameButtonVisible }) => {
     }
     if (
       finishScreenType === finishScreenTypes.finish &&
-      loggedUserTaskNumber === 9
+      isFirstFinishMilestone(loggedUserTaskNumber)
     ) {
       setUserPointerFinishAnimationCoordintes({
         top: "130%",
@@ -149,7 +151,7 @@ export const SVGMap: FC<IProps> = ({ tableData, setIsGameButtonVisible }) => {
               >
                 {hoverIndex === groupIndex &&
                   isModalVisible &&
-                  group.users.length > 5 && (
+                  group.users.length > UI_CONFIG.MAX_AVATARS_BEFORE_MODAL && (
                     <PointersModal
                       users={group.users}
                       setIsModalVisible={setIsModalVisible}
@@ -170,7 +172,7 @@ export const SVGMap: FC<IProps> = ({ tableData, setIsGameButtonVisible }) => {
                 />
                 <div
                   onClick={() => {
-                    if (group.users.length > 5) {
+                    if (group.users.length > UI_CONFIG.MAX_AVATARS_BEFORE_MODAL) {
                       handleOpenModal();
                     }
                   }}

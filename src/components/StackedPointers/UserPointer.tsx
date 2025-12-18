@@ -1,11 +1,16 @@
 import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 
-import { IUserInGroupData, finishScreenTypes } from "../../consts";
+import { IUserInGroupData } from "../../consts";
 import { coloredPointers } from "../../consts/colors";
 import { UserTooltip } from "../UserTooltip/UserTooltip";
 import { useLoading } from "../../context/LoadingContext";
 import { calcPointerHoverPosition } from "../../helpers/calculateHoverPostion";
+import { 
+  getFinishScreenType, 
+  triggersFinishScreen,
+  isFirstFinishMilestone 
+} from "../../domain/questRules";
 
 interface IProps {
   currentUserId?: string;
@@ -44,20 +49,23 @@ export const UserPointer: FC<IProps> = ({
   const moveLoggedUserToFinish =
     loggedUser &&
     finishCoordinates &&
-    (user.taskNumber === 9 || user.taskNumber === 14);
+    triggersFinishScreen(user.taskNumber);
 
   const handleFinishScreenType = useCallback(() => {
-    if (loggedUser) {
-      if (taskNumber >= 9 && taskNumber < 14) {
-        setFinishScreenType(finishScreenTypes.finish);
-        if (taskNumber === 9) {
-          setLoggedUserTaskNumber(taskNumber);
-        }
-      } else if (taskNumber === 14) {
-        setFinishScreenType(finishScreenTypes.dzen);
+    if (!loggedUser) {
+      return;
+    }
+
+    const finishType = getFinishScreenType(taskNumber);
+    if (finishType) {
+      setFinishScreenType(finishType);
+      
+      // Track when user reaches first milestone
+      if (isFirstFinishMilestone(taskNumber)) {
+        setLoggedUserTaskNumber(taskNumber);
       }
     }
-  }, [loggedUser, taskNumber]);
+  }, [loggedUser, taskNumber, setFinishScreenType, setLoggedUserTaskNumber]);
 
   useEffect(() => {
     handleFinishScreenType();
@@ -98,7 +106,7 @@ export const UserPointer: FC<IProps> = ({
             borderRadius: "100%",
             height: parentDivHeight ? parentDivHeight / 1.6 : "",
             zIndex:
-              loggedUser && (taskNumber === 9 || taskNumber === 14)
+              loggedUser && triggersFinishScreen(taskNumber)
                 ? index + 101
                 : index + 1,
           }}
@@ -119,7 +127,7 @@ export const UserPointer: FC<IProps> = ({
             height: parentDivHeight * 1.6,
             width: parentDivWidth * 1.6,
             zIndex:
-              loggedUser && (taskNumber === 9 || taskNumber === 14)
+              loggedUser && triggersFinishScreen(taskNumber)
                 ? index + 100
                 : index,
           }}

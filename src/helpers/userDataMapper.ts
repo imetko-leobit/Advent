@@ -1,27 +1,32 @@
 import { IdTokenClaims } from "oidc-client-ts";
-import { IRowData, IUserDataWithPostition, tasksEnum } from "../consts";
+import { IRowData, IUserDataWithPostition } from "../consts";
 import { initialMapTaskPositions } from "../consts/taskPositions";
+import { 
+  extractUserIdFromEmail, 
+  extractTaskColumns, 
+  parseSocialNetworkPoints 
+} from "../domain/csvValidation";
+import { countCompletedTasks, normalizePosition } from "../domain/questRules";
+import { CSV_SCHEMA, getEmployeePhotoUrl } from "../config/questConfig";
 
 export const positionMapper = (
   jsonData: IRowData[]
 ): IUserDataWithPostition[] => {
   const dataWithUserPosition = jsonData.map((rowData: IRowData) => {
-    const email = rowData["Email Address"];
-    const leobitUserId = email.split("@")[0];
+    const email = rowData[CSV_SCHEMA.REQUIRED_COLUMNS.EMAIL];
+    const leobitUserId = extractUserIdFromEmail(email) || email.split("@")[0];
 
-    const name = rowData[`Ім'я та прізвище`];
-    const socialNetworkPoint = rowData["Соц мережі відмітки"] ?? 0;
+    const name = rowData[CSV_SCHEMA.REQUIRED_COLUMNS.NAME] || email;
+    const socialNetworkPoint = parseSocialNetworkPoints(
+      rowData[CSV_SCHEMA.OPTIONAL_COLUMNS.SOCIAL_NETWORK_POINTS]
+    );
 
-    const tasksArray = Object.keys(rowData)
-      .filter((key) => /^\d+\./.test(key))
-      .sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+    const tasksArray = extractTaskColumns(rowData);
 
-    const currentPosition = tasksArray.reduce((position, key) => {
-      return rowData[key as tasksEnum] !== null ? position + 1 : position;
-    }, 0);
+    const currentPosition = countCompletedTasks(rowData as unknown as Record<string, unknown>, tasksArray);
 
     return {
-      taskNumber: currentPosition > 0 ? currentPosition : 0,
+      taskNumber: normalizePosition(currentPosition),
       id: leobitUserId,
       email,
       socialNetworkPoint,
@@ -39,13 +44,14 @@ const userDataMapper = (
   const mapTaskPositions = JSON.parse(JSON.stringify(initialMapTaskPositions));
 
   users.forEach((userData) => {
-    const imageUrl = `https://api.employee.leobit.co/photos-small/${userData.id}.png`;
+    const imageUrl = getEmployeePhotoUrl(userData.id);
     const { taskNumber, id, email, name, socialNetworkPoint } = userData;
 
     const isCurrentUserALoggedUser = userData.id === loggedUser.sub;
     const isUserAtTheStartPosition = taskNumber === 0;
 
-    //It was decided that only the currently logged-in user should be visible at the starting position. This is done to prevent all users who wanted to take part in the quest but have not yet finished any tasks from being stacked at the beginning.
+    // Rule: Only the logged-in user is visible at the starting position.
+    // This prevents cluttering the start with users who haven't completed any tasks.
     if (isUserAtTheStartPosition && !isCurrentUserALoggedUser) return;
 
     mapTaskPositions[taskNumber].users.push({

@@ -1,0 +1,17 @@
+.close-screen-btn-container {
+  position: "absolute";
+  top: 3%;
+  right: 5%;
+  cursor: "pointer";
+}
+
+.close-screen-btn {
+  font-size: 300%;
+  font-weight: 900;
+  color: white;
+  transition: color 0.3s;
+}
+
+.close-screen-btn:hover {
+  color: black;
+}

@@ -40,7 +40,13 @@ export const UserPointer: FC<IProps> = ({
   const { stopLoading } = useLoading();
   const pointerRef = useRef<HTMLDivElement>(null);
   const [isTooltipVisible, setIsTooltipVisible] = useState(false);
+  const [imgSrc, setImgSrc] = useState(user.imageUrl);
   const { taskNumber, name, imageUrl, socialNetworkPoint, id } = user;
+
+  const handleImageError = () => {
+    // Use fallback avatar if image fails to load
+    setImgSrc("/fallback-avatar.svg");
+  };
   const initialPosition =
     totalCount < 10 ? { left: `${index * 10}px` } : { left: `${index * 2}px` };
 
@@ -97,8 +103,9 @@ export const UserPointer: FC<IProps> = ({
     >
       <div>
         <motion.img
-          src={imageUrl}
+          src={imgSrc}
           alt={`${currentUserId} avatar`}
+          onError={handleImageError}
           style={{
             position: "absolute",
             left: "40%",

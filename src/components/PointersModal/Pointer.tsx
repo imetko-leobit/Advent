@@ -12,6 +12,11 @@ interface IProps {
 
 export const Pointer: FC<IProps> = ({ user, usersCount, index }) => {
   const [isTooltipVisible, setIsTooltipVisible] = useState(false);
+  const [imgSrc, setImgSrc] = useState(user.imageUrl);
+
+  const handleImageError = () => {
+    setImgSrc("/fallback-avatar.svg");
+  };
 
   const calculateElementSize = () => {
     const maxUsersPerRow = 5;
@@ -35,8 +40,9 @@ export const Pointer: FC<IProps> = ({ user, usersCount, index }) => {
       }}
     >
       <motion.img
-        src={user.imageUrl}
+        src={imgSrc}
         alt={`${user.name} avatar`}
+        onError={handleImageError}
         style={{
           position: "absolute",
           ...calcAvatarPositionAndSize(usersCount),

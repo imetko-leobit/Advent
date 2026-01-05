@@ -1,12 +1,14 @@
 import React, { ReactNode } from "react";
-import { AuthContext, AuthContextProps } from "react-oidc-context";
-import { User, UserManagerSettings, UserManagerEvents } from "oidc-client-ts";
+import { User } from "oidc-client-ts";
+import { AuthContextProvider, AuthState } from "./AuthContext";
 
 // DEV-ONLY: Mock authentication context for local development
-// This bypasses OIDC authentication when import.meta.env.DEV is true
+// This bypasses OIDC authentication when in DEV mode
 // Remove or disable this when real OIDC access is available
 
-// Create a mock user object that mimics OIDC User structure
+/**
+ * Create a mock user object that mimics OIDC User structure
+ */
 const createMockUser = (): User => {
   return {
     profile: {
@@ -25,49 +27,29 @@ const createMockUser = (): User => {
   } as User;
 };
 
-export const MockAuthProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
+/**
+ * Mock Authentication Provider for DEV mode
+ * 
+ * Provides a mock authenticated state that works identically to OIDC mode
+ * from the perspective of the rest of the application.
+ */
+export const MockAuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const mockUser = createMockUser();
 
-  // Create a mock context that matches AuthContextProps interface
-  const mockAuthContext: AuthContextProps = {
-    // AuthState properties
-    user: mockUser,
+  const authState: AuthState = {
     isAuthenticated: true,
-    isLoading: false,
-    activeNavigator: undefined,
+    isAuthLoading: false,
+    authMode: 'dev',
+    user: mockUser,
     error: undefined,
-    
-    // UserManager settings and events - minimal mocks
-    settings: {} as UserManagerSettings,
-    events: {} as UserManagerEvents,
-    
-    // UserManager methods - all no-ops for dev mode
-    clearStaleState: async () => {},
-    removeUser: async () => {
-      console.log("[DEV] Mock removeUser called");
+    signIn: async () => {
+      console.log("[DEV] Mock signIn called - already authenticated in DEV mode");
     },
-    signinPopup: async () => mockUser,
-    signinSilent: async () => mockUser,
-    signinRedirect: async () => {
-      console.log("[DEV] Mock signinRedirect called");
+    signOut: async () => {
+      console.log("[DEV] Mock signOut called - reloading page");
+      window.location.reload();
     },
-    signinResourceOwnerCredentials: async () => mockUser,
-    signoutRedirect: async () => {
-      console.log("[DEV] Mock signoutRedirect called");
-    },
-    signoutPopup: async () => {},
-    signoutSilent: async () => {},
-    querySessionStatus: async () => null,
-    revokeTokens: async () => {},
-    startSilentRenew: () => {},
-    stopSilentRenew: () => {},
   };
 
-  return (
-    <AuthContext.Provider value={mockAuthContext}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContextProvider value={authState}>{children}</AuthContextProvider>;
 };

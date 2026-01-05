@@ -2,7 +2,7 @@ import { FC, RefObject, useEffect, useState } from "react";
 import { UserPointer } from "./UserPointer";
 import { motion } from "framer-motion";
 import { IMapTaskPosition, IUserInGroupData } from "../../consts";
-import { useAuth } from "react-oidc-context";
+import { useAuthContext } from "../../auth/AuthContext";
 import { finishScreenService, userProgressService } from "../../domain";
 
 interface IProps {
@@ -30,7 +30,7 @@ export const StackedPointers: FC<IProps> = ({
   setLoggedUserTaskNumber,
   finishCoordinates,
 }) => {
-  const { user } = useAuth();
+  const { user } = useAuthContext();
   const [usersWithoutLoggedUser, setUsersWithoutLoggedUser] = useState<
     IUserInGroupData[]
   >([]);

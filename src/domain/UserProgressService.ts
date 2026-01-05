@@ -3,22 +3,31 @@
  * Handles user progress mapping and position calculations
  */
 
-import { initialMapTaskPositions } from "../consts/taskPositions";
+import { uiConfig } from "../config";
 import { TaskPosition, UserProgress, UserInGroup } from "./interfaces";
 import { avatarService } from "./AvatarService";
 
 export class UserProgressService {
   /**
    * Maps users to their task positions on the map
+   * 
+   * Note: The config taskPositions don't include the users array to keep configuration clean.
+   * This method clones the config positions and initializes the users array for runtime use.
+   * 
    * @param users - Array of user progress data
    * @param loggedUserId - ID of the currently logged-in user
    * @returns Array of task positions with users
    */
   mapUsersToPositions(users: UserProgress[], loggedUserId: string): TaskPosition[] {
-    // Deep clone initial positions to avoid mutating the original
+    // Deep clone task positions from config to avoid mutating the original
     const mapTaskPositions: TaskPosition[] = JSON.parse(
-      JSON.stringify(initialMapTaskPositions)
+      JSON.stringify(uiConfig.taskPositions)
     );
+
+    // Initialize users array for each position (not in config to keep it simple)
+    mapTaskPositions.forEach(position => {
+      position.users = [];
+    });
 
     users.forEach((userData) => {
       const imageUrl = avatarService.generateAvatarUrl(userData.id);

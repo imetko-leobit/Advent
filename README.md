@@ -76,11 +76,18 @@ src/
 │   ├── auth-provider.tsx       # Main auth provider (switches between real/mock)
 │   ├── dev-auth-provider.tsx   # DEV-only mock auth provider
 │   └── config.ts               # OIDC configuration
-├── services/          # Data service layer (NEW)
+├── config/            # UI Configuration (NEW)
+│   └── uiConfig.ts             # Central UI configuration for all visual elements
+├── services/          # Data service layer
 │   ├── QuestDataService.ts     # Main data service implementation
 │   ├── questDataServiceFactory.ts  # Service factory with environment detection
 │   ├── types.ts                # Service interfaces and types
 │   └── index.ts                # Service exports
+├── domain/            # Domain layer with business logic
+│   ├── FinishScreenService.ts  # Finish screen logic
+│   ├── UserProgressService.ts  # User progress mapping
+│   ├── TaskEvaluationService.ts # Task evaluation logic
+│   └── AvatarService.ts        # Avatar URL generation
 ├── components/        # React components
 ├── hooks/            # Custom React hooks
 │   └── useQuestData.tsx       # Data fetching hook (uses QuestDataService)
@@ -91,6 +98,23 @@ src/
 public/
 └── mock-quest-data.csv    # Mock data for local development
 ```
+
+## UI Configuration
+
+The application now features **fully configurable UI components**. All visual elements can be customized through a central configuration file without touching component code.
+
+**See [UI_CONFIGURATION.md](./UI_CONFIGURATION.md) for complete documentation.**
+
+### Quick Configuration Guide:
+
+- 🗺️ **Map & Background:** Change SVG map and background images
+- 📍 **Task Positions:** Add/remove/reposition tasks dynamically
+- ⭐ **Animations:** Configure stars, clouds, and character animations
+- 🎯 **Step Markers:** Customize step images and shadows
+- 🏆 **Finish Screens:** Replace finish screen images
+- 👤 **Avatars/Pointers:** Configure colored pointers and fallback avatars
+
+**Configuration File:** `/src/config/uiConfig.ts`
 
 ## Data Service Layer
 

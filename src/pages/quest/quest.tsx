@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "react-oidc-context";
-import QuestBackground from "../../assets/background/Quest_background.svg";
+import { uiConfig } from "../../config";
 import { GameButton } from "../../components/GameButton/GameButton";
 import { SVGMap } from "../../components/Map";
 import { IMapTaskPosition } from "../../consts";
@@ -31,7 +31,7 @@ export const Quest = () => {
   return (
     <div>
       <img
-        src={QuestBackground}
+        src={uiConfig.map.background}
         style={{
           height: "100%",
           width: "100%",

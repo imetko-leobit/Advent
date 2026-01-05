@@ -1,7 +1,6 @@
 import { FC } from "react";
 import { motion } from "framer-motion";
-import FinishScreenSVG from "../../assets/finish-screens/Finish_screen.svg";
-import DzenScreenSVG from "../../assets/finish-screens/Dzen_screen.svg";
+import { uiConfig } from "../../config";
 import "./FinishScreen.css";
 import { finishScreenTypes } from "../../consts";
 
@@ -11,6 +10,10 @@ interface IProps {
 }
 
 export const FinishScreen: FC<IProps> = ({ screenType, handleCloseClick }) => {
+  const finishScreenImage = screenType === finishScreenTypes.finish
+    ? uiConfig.finishScreens.finish
+    : uiConfig.finishScreens.dzen;
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -36,11 +39,7 @@ export const FinishScreen: FC<IProps> = ({ screenType, handleCloseClick }) => {
         <motion.div className="close-screen-btn">&times;</motion.div>
       </motion.div>
       <motion.img
-        src={
-          screenType === finishScreenTypes.finish
-            ? FinishScreenSVG
-            : DzenScreenSVG
-        }
+        src={finishScreenImage}
         style={{
           height: "100%",
           width: "100%",

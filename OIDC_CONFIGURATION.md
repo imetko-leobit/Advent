@@ -51,7 +51,7 @@ The following configuration parameters are defined in the application:
 - **Note:** This value must match the client ID configured in your OIDC provider. If your provider uses a different client ID, you must modify the source code or refactor to use an environment variable.
 
 ### 4. **scope** (HARDCODED)
-- **Current Value:** `"quest openid profile"`
+- **Current Value:** `quest openid profile`
 - **Location:** `src/auth/config.ts` (line 8)
 - **Purpose:** OAuth2/OIDC scopes requested during authentication
 - **Status:** Currently hardcoded in the source code
@@ -393,6 +393,6 @@ VITE_GOOGLE_SHEET_URL=https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/expor
 ---
 
 **Document Version:** 1.0  
-**Created:** January 2025  
+**Created:** January 5, 2026  
 **Analyzed Codebase:** Well Being Quest (Advent App)  
 **Created By:** GitHub Copilot OIDC Configuration Analysis

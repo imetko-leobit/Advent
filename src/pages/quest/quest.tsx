@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "react-oidc-context";
-import { useLocation, useNavigate } from "react-router-dom";
 import QuestBackground from "../../assets/background/Quest_background.svg";
 import { GameButton } from "../../components/GameButton/GameButton";
 import { SVGMap } from "../../components/Map";
 import { IMapTaskPosition } from "../../consts";
-import { routes } from "../../router";
 import { useLoading } from "../../context/LoadingContext";
 import { usersDataMapper } from "../../helpers/userDataMapper";
 import { useQuestData } from "../../hooks/useQuestData";
@@ -17,20 +15,10 @@ export const Quest = () => {
   const [mappedData, setMappedData] = useState<IMapTaskPosition[]>();
 
   const [isGameButtonVisible, setIsGameButtonVisible] = useState(true);
-  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
-  const location = useLocation();
-  const navigate = useNavigate();
   const { loading } = useLoading();
 
-  useEffect(() => {
-    if (!isAuthenticated && !isAuthLoading) {
-      const currentPath = window.location.pathname;
-
-      navigate(
-        routes.login.path + `?returnUrl=${encodeURIComponent(currentPath)}`
-      );
-    }
-  }, [isAuthenticated, isAuthLoading, location.pathname, navigate]);
+  // Authentication is now handled by ProtectedRoute wrapper
+  // No need for auth redirect logic here
 
   useEffect(() => {
     if (jsonData && user?.profile) {

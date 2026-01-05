@@ -2,6 +2,7 @@ import { Navigate, RouteObject, createBrowserRouter } from "react-router-dom";
 import PathsEnum from "./PathEnum";
 import { Login } from "../pages/login/login";
 import { Quest } from "../pages/quest/quest";
+import { ProtectedRoute } from "../components/ProtectedRoute";
 
 export const routes = {
   root: {
@@ -16,7 +17,12 @@ export const routes = {
 
   quest: {
     path: PathsEnum.quest,
-    element: <Quest />,
+    // Wrap Quest in ProtectedRoute to ensure authentication before rendering
+    element: (
+      <ProtectedRoute>
+        <Quest />
+      </ProtectedRoute>
+    ),
   } satisfies RouteObject,
 } as const;
 

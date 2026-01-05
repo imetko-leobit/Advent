@@ -25,6 +25,11 @@ export const Step: FC<IProps> = ({ group, groupIndex }) => {
     ? uiConfig.steps.shadow.green 
     : uiConfig.steps.shadow.purple;
 
+  // Check if the current user is at this position
+  const isUserAtThisPosition = user?.profile?.sub && group.users
+    ? group.users.find((u: IUserInGroupData) => u.id === user.profile.sub)
+    : false;
+
   return (
     <div>
       {group.taskNumber !== 0 && (
@@ -52,10 +57,7 @@ export const Step: FC<IProps> = ({ group, groupIndex }) => {
               zIndex: 1,
             }}
           />
-          {groupIndex !== 0 &&
-            group.users.find(
-              (u: IUserInGroupData) => u.id === user?.profile.sub
-            ) && (
+          {groupIndex !== 0 && isUserAtThisPosition && (
               <>
                 <motion.img
                   src={stepShadow}

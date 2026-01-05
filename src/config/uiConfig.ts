@@ -90,6 +90,7 @@ export interface TaskPositionConfig {
   cyPointers: number;  // Y coordinate for user pointers (percentage)
   cxStep: number;      // X coordinate for step marker (percentage)
   cyStep: number;      // Y coordinate for step marker (percentage)
+  users?: never[];     // Users array - will be populated at runtime
 }
 
 /**

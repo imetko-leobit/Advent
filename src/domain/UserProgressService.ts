@@ -20,6 +20,11 @@ export class UserProgressService {
       JSON.stringify(uiConfig.taskPositions)
     );
 
+    // Initialize users array for each position
+    mapTaskPositions.forEach(position => {
+      position.users = [];
+    });
+
     users.forEach((userData) => {
       const imageUrl = avatarService.generateAvatarUrl(userData.id);
       const { taskNumber, id, email, name, socialNetworkPoint } = userData;

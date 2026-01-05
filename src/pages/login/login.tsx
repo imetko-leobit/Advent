@@ -1,8 +1,8 @@
 import { FC, useEffect, useRef } from "react";
 import { useAuth } from "react-oidc-context";
 import { useLocation, useNavigate } from "react-router-dom";
-import { routes } from "../../router/index.tsx";
-import PathsEnum from "../../router/PathEnum.ts";
+import { routes } from "../../router/index";
+import PathsEnum from "../../router/PathEnum";
 import { Button } from "primereact/button";
 import { Panel } from "primereact/panel";
 import { ProgressSpinner } from "primereact/progressspinner";
@@ -56,7 +56,7 @@ export const Login: FC = () => {
     signinRedirect,
     userState?.continueUri,
     location.pathname,
-    continueUri,
+    returnUrl,
   ]);
 
   if (isLoading)

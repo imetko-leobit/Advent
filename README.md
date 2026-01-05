@@ -72,11 +72,13 @@ npm run preview
 
 ```
 src/
-├── auth/              # Authentication providers and config
-│   ├── auth-provider.tsx       # Main auth provider (switches between real/mock)
-│   ├── dev-auth-provider.tsx   # DEV-only mock auth provider
+├── auth/              # Authentication system (NEW ARCHITECTURE)
+│   ├── auth-provider.tsx       # Main auth provider with mode switching
+│   ├── dev-auth-provider.tsx   # DEV mode mock auth provider
+│   ├── AuthContext.tsx         # Centralized auth state abstraction
+│   ├── authConfig.ts           # Auth mode configuration and validation
 │   └── config.ts               # OIDC configuration
-├── config/            # UI Configuration (NEW)
+├── config/            # UI Configuration
 │   └── uiConfig.ts             # Central UI configuration for all visual elements
 ├── services/          # Data service layer
 │   ├── QuestDataService.ts     # Main data service implementation
@@ -134,6 +136,118 @@ See [QUEST_DATA_SERVICE.md](./QUEST_DATA_SERVICE.md) for detailed documentation.
 ✅ Clean abstraction for future enhancements
 
 ## Development Notes
+
+### Authentication Architecture
+
+The application features a **robust, dual-mode authentication system** that works reliably in both development and production environments.
+
+**See [AUTHENTICATION.md](./AUTHENTICATION.md) for complete authentication system documentation.**
+
+#### Quick Overview
+
+**Auth Modes:**
+
+1. **DEV Mode** (Development)
+   - Always authenticated - no OIDC required
+   - Mock user: `dev@leobit.com`
+   - No external dependencies
+   - Perfect for local development and testing
+   - Activated when: `import.meta.env.DEV === true` AND no `VITE_APP_AUTH_AUTHORITY` is set
+
+2. **OIDC Mode** (Production)
+   - Real OIDC authentication flow
+   - Redirects to external identity provider
+   - Requires valid OIDC configuration
+   - Activated when: `VITE_APP_AUTH_AUTHORITY` is configured
+
+#### How Routing & Protection Work
+
+The application uses a **centralized authentication abstraction** (`AuthContext`) that provides consistent auth state to all components, regardless of the mode:
+
+```typescript
+interface AuthState {
+  isAuthenticated: boolean;
+  isAuthLoading: boolean;
+  authMode: 'dev' | 'oidc';
+  user: User | null;
+  signIn: () => Promise<void>;
+  signOut: () => Promise<void>;
+}
+```
+
+**Key Components:**
+
+- **`AuthProvider`**: Top-level provider that detects auth mode and sets up appropriate provider (mock or OIDC)
+- **`AuthContext`**: Centralized auth state that all components consume via `useAuthContext()` hook
+- **`ProtectedRoute`**: Route guard that ensures auth state is resolved before rendering protected content
+- **`Login`**: Handles authentication flow for both modes
+
+**Routing Flow:**
+
+1. User navigates to `/quest` (protected route)
+2. `ProtectedRoute` checks `isAuthLoading`:
+   - If `true`: Shows loading spinner (prevents premature redirects)
+   - If `false` and `!isAuthenticated`: Redirects to `/login?returnUrl=/quest`
+   - If `false` and `isAuthenticated`: Renders quest page
+3. After successful authentication, user is redirected back to original destination
+
+#### Common Redirect Loop Causes & Prevention
+
+The authentication system prevents redirect loops through several mechanisms:
+
+**❌ Common Causes of Redirect Loops:**
+1. Redirecting before auth state is fully loaded
+2. Multiple components triggering redirects simultaneously
+3. Login page redirecting while still in loading state
+4. Protected route and login page both triggering redirects
+
+**✅ How We Prevent Them:**
+
+1. **Wait for Auth Resolution**: No redirects happen while `isAuthLoading === true`
+   ```typescript
+   if (isAuthLoading) return; // Early exit prevents premature redirects
+   ```
+
+2. **Single Source of Truth**: All components use `useAuthContext()` instead of directly accessing OIDC hooks
+
+3. **Ref-Based Guards**: Login page uses `useRef` to track if signin was already initiated
+   ```typescript
+   const hasInitiatedSignin = useRef(false);
+   if (!hasInitiatedSignin.current) {
+     hasInitiatedSignin.current = true;
+     signIn();
+   }
+   ```
+
+4. **Replace Instead of Push**: Navigation uses `replace: true` to avoid polluting browser history
+   ```typescript
+   navigate(path, { replace: true });
+   ```
+
+5. **Conditional Redirects**: Only redirect when necessary
+   ```typescript
+   if (!isAuthenticated && currentPath !== PathsEnum.login) {
+     navigate(PathsEnum.login);
+   }
+   ```
+
+#### Configuration Validation
+
+The system validates OIDC configuration at runtime:
+
+- **Valid Config**: App starts normally
+- **Invalid Config**: Shows clear error screen with instructions:
+  ```
+  ⚠️ Authentication Configuration Error
+  
+  OIDC mode is enabled but required environment variables are missing:
+    - VITE_APP_AUTH_AUTHORITY
+    - VITE_APP_AUTH_REDIRECT_URI
+  
+  Please set these values in your .env file or switch to DEV mode...
+  ```
+
+This prevents silent failures and makes configuration issues immediately obvious.
 
 ### DEV Mode vs Production
 

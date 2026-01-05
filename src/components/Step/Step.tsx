@@ -2,7 +2,7 @@ import { FC } from "react";
 import { motion } from "framer-motion";
 import { uiConfig } from "../../config";
 import { IMapTaskPosition, IUserInGroupData } from "../../consts";
-import { useAuth } from "react-oidc-context";
+import { useAuthContext } from "../../auth/AuthContext";
 
 interface IProps {
   group: IMapTaskPosition;
@@ -10,7 +10,7 @@ interface IProps {
 }
 
 export const Step: FC<IProps> = ({ group, groupIndex }) => {
-  const { user } = useAuth();
+  const { user } = useAuthContext();
   const hoverAnimation = {
     backgroundColor: "rgba(0, 0, 0, 0.3)",
     scale: 1.1,

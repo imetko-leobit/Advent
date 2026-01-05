@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useAuth } from "react-oidc-context";
 import { uiConfig } from "../../config";
 import { GameButton } from "../../components/GameButton/GameButton";
 import { SVGMap } from "../../components/Map";
@@ -7,9 +6,10 @@ import { IMapTaskPosition } from "../../consts";
 import { useLoading } from "../../context/LoadingContext";
 import { usersDataMapper } from "../../helpers/userDataMapper";
 import { useQuestData } from "../../hooks/useQuestData";
+import { useAuthContext } from "../../auth/AuthContext";
 
 export const Quest = () => {
-  const { user } = useAuth();
+  const { user } = useAuthContext();
   const { jsonData } = useQuestData();
 
   const [mappedData, setMappedData] = useState<IMapTaskPosition[]>();

@@ -71,4 +71,3 @@ export const MockAuthProvider: React.FC<{ children: ReactNode }> = ({
     </AuthContext.Provider>
   );
 };
-

@@ -3,7 +3,7 @@ import { getAuthRedirectUri, getAuthority } from "../configUtils";
 
 // DEV-ONLY: Provide fallback values when environment variables are not set
 // This prevents errors during local development without real OIDC
-const authority = getAuthority() || "https://dev-mock-authority.local";
+const authority = getAuthority() || "mock-authority-for-dev";
 const redirectUri = getAuthRedirectUri() || "http://localhost:3000";
 
 export const oidcConfig = {

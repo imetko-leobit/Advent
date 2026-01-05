@@ -82,6 +82,7 @@ import three_purple from "../assets/pointers/purple/three.svg";
 /**
  * Task Position Configuration
  * Defines coordinates for each task on the map
+ * Note: The users array will be populated at runtime by UserProgressService
  */
 export interface TaskPositionConfig {
   taskTitle: tasksEnum;
@@ -90,7 +91,6 @@ export interface TaskPositionConfig {
   cyPointers: number;  // Y coordinate for user pointers (percentage)
   cxStep: number;      // X coordinate for step marker (percentage)
   cyStep: number;      // Y coordinate for step marker (percentage)
-  users?: never[];     // Users array - will be populated at runtime
 }
 
 /**

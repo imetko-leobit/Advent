@@ -10,6 +10,10 @@ import { avatarService } from "./AvatarService";
 export class UserProgressService {
   /**
    * Maps users to their task positions on the map
+   * 
+   * Note: The config taskPositions don't include the users array to keep configuration clean.
+   * This method clones the config positions and initializes the users array for runtime use.
+   * 
    * @param users - Array of user progress data
    * @param loggedUserId - ID of the currently logged-in user
    * @returns Array of task positions with users
@@ -20,7 +24,7 @@ export class UserProgressService {
       JSON.stringify(uiConfig.taskPositions)
     );
 
-    // Initialize users array for each position
+    // Initialize users array for each position (not in config to keep it simple)
     mapTaskPositions.forEach(position => {
       position.users = [];
     });

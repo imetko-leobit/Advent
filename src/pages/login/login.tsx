@@ -48,7 +48,8 @@ export const Login: FC = () => {
       // Clear the returnUrl from the URL
       window.history.replaceState({}, document.title, location.pathname);
       
-      // Navigate to the intended destination (returnUrl or default quest page)
+      // Navigate to the intended destination
+      // Precedence: userState?.continueUri (from OIDC) → continueUri (from URL) → default quest
       const destination = userState?.continueUri || continueUri || routes.quest.path;
       navigate(destination, { replace: true });
     } 

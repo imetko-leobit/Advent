@@ -95,11 +95,14 @@ export function getAuthConfig(): AuthConfig {
     validateOidcConfig(authority, redirectUri);
   }
   
-  console.log(`[Auth] Mode: ${mode.toUpperCase()}`);
-  if (mode === 'dev') {
-    console.log('[Auth] Using DEV mode - authentication bypassed');
-  } else {
-    console.log(`[Auth] Using OIDC mode - authority: ${authority}`);
+  // Log auth mode for debugging (DEV mode only)
+  if (import.meta.env.DEV) {
+    console.log(`[Auth] Mode: ${mode.toUpperCase()}`);
+    if (mode === 'dev') {
+      console.log('[Auth] Using DEV mode - authentication bypassed');
+    } else {
+      console.log(`[Auth] Using OIDC mode - authority: ${authority}`);
+    }
   }
   
   return config;

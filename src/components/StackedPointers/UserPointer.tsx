@@ -1,11 +1,12 @@
 import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 
-import { IUserInGroupData, finishScreenTypes } from "../../consts";
+import { IUserInGroupData } from "../../consts";
 import { coloredPointers } from "../../consts/colors";
 import { UserTooltip } from "../UserTooltip/UserTooltip";
 import { useLoading } from "../../context/LoadingContext";
 import { calcPointerHoverPosition } from "../../helpers/calculateHoverPostion";
+import { finishScreenService } from "../../domain";
 
 interface IProps {
   currentUserId?: string;
@@ -44,17 +45,20 @@ export const UserPointer: FC<IProps> = ({
   const moveLoggedUserToFinish =
     loggedUser &&
     finishCoordinates &&
-    (user.taskNumber === 9 || user.taskNumber === 14);
+    finishScreenService.isSpecialTask(taskNumber);
 
   const handleFinishScreenType = useCallback(() => {
-    if (loggedUser) {
-      if (taskNumber >= 9 && taskNumber < 14) {
-        setFinishScreenType(finishScreenTypes.finish);
-        if (taskNumber === 9) {
-          setLoggedUserTaskNumber(taskNumber);
-        }
-      } else if (taskNumber === 14) {
-        setFinishScreenType(finishScreenTypes.dzen);
+    if (!loggedUser) return;
+
+    const finishConfig = finishScreenService.getFinishScreenConfig(
+      taskNumber,
+      loggedUser
+    );
+
+    if (finishConfig.shouldShow) {
+      setFinishScreenType(finishConfig.type);
+      if (finishConfig.taskNumber === 9) {
+        setLoggedUserTaskNumber(finishConfig.taskNumber);
       }
     }
   }, [loggedUser, taskNumber]);
@@ -98,7 +102,7 @@ export const UserPointer: FC<IProps> = ({
             borderRadius: "100%",
             height: parentDivHeight ? parentDivHeight / 1.6 : "",
             zIndex:
-              loggedUser && (taskNumber === 9 || taskNumber === 14)
+              loggedUser && finishScreenService.isSpecialTask(taskNumber)
                 ? index + 101
                 : index + 1,
           }}
@@ -119,7 +123,7 @@ export const UserPointer: FC<IProps> = ({
             height: parentDivHeight * 1.6,
             width: parentDivWidth * 1.6,
             zIndex:
-              loggedUser && (taskNumber === 9 || taskNumber === 14)
+              loggedUser && finishScreenService.isSpecialTask(taskNumber)
                 ? index + 100
                 : index,
           }}

@@ -3,13 +3,47 @@ import Papa from "papaparse";
 import { useLoading } from "../context/LoadingContext";
 import { IRowData } from "../consts";
 
+// DEV-ONLY: Determine the data source URL
+// In DEV mode without VITE_GOOGLE_SHEET_URL, use local mock CSV
+const getDataSourceUrl = () => {
+  const googleSheetUrl = import.meta.env.VITE_GOOGLE_SHEET_URL;
+  
+  if (googleSheetUrl) {
+    return googleSheetUrl;
+  }
+  
+  if (import.meta.env.DEV) {
+    console.log("[DEV] Using mock CSV data for local development");
+    return "/mock-quest-data.csv";
+  }
+  
+  // Production fallback - should not happen in normal operation
+  console.error("VITE_GOOGLE_SHEET_URL is not configured");
+  return "";
+};
+
 export const useQuestData = () => {
   const [jsonData, setJsonData] = useState<IRowData[]>([]);
   const { stopLoading, startLoading } = useLoading();
 
   const fetchData = async () => {
-    const response = await fetch(import.meta.env.VITE_GOOGLE_SHEET_URL);
+    const dataUrl = getDataSourceUrl();
+    
+    if (!dataUrl) {
+      console.error("No data source URL available");
+      stopLoading();
+      return;
+    }
+    
     try {
+      const response = await fetch(dataUrl);
+      
+      if (!response.ok) {
+        console.error(`Error fetching CSV: HTTP ${response.status}`);
+        stopLoading();
+        return;
+      }
+      
       const csvData = await response.text();
       Papa.parse(csvData, {
         header: true,

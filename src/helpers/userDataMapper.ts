@@ -5,9 +5,15 @@ import { initialMapTaskPositions } from "../consts/taskPositions";
 export const positionMapper = (
   jsonData: IRowData[]
 ): IUserDataWithPostition[] => {
-  const dataWithUserPosition = jsonData.map((rowData: IRowData) => {
-    const email = rowData["Email Address"];
-    const leobitUserId = email.split("@")[0];
+  const dataWithUserPosition = jsonData
+    .filter((rowData: IRowData) => {
+      const email = rowData["Email Address"];
+      // Filter out rows without email or with invalid email format
+      return email && typeof email === "string" && email.includes("@");
+    })
+    .map((rowData: IRowData) => {
+      const email = rowData["Email Address"];
+      const leobitUserId = email.split("@")[0];
 
     const name = rowData[`Ім'я та прізвище`];
     const socialNetworkPoint = rowData["Соц мережі відмітки"] ?? 0;

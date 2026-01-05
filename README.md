@@ -76,9 +76,14 @@ src/
 │   ├── auth-provider.tsx       # Main auth provider (switches between real/mock)
 │   ├── dev-auth-provider.tsx   # DEV-only mock auth provider
 │   └── config.ts               # OIDC configuration
+├── services/          # Data service layer (NEW)
+│   ├── QuestDataService.ts     # Main data service implementation
+│   ├── questDataServiceFactory.ts  # Service factory with environment detection
+│   ├── types.ts                # Service interfaces and types
+│   └── index.ts                # Service exports
 ├── components/        # React components
 ├── hooks/            # Custom React hooks
-│   └── useQuestData.tsx       # Data fetching (supports mock CSV)
+│   └── useQuestData.tsx       # Data fetching hook (uses QuestDataService)
 ├── pages/            # Page components
 ├── helpers/          # Utility functions
 └── consts/           # Constants and types
@@ -86,6 +91,23 @@ src/
 public/
 └── mock-quest-data.csv    # Mock data for local development
 ```
+
+## Data Service Layer
+
+The application now includes a **service layer** that abstracts data fetching and parsing:
+
+- **QuestDataService**: Handles CSV fetching, parsing, and polling
+- **Auto-configured**: Automatically detects DEV/PROD mode
+- **Type-safe**: Full TypeScript support with interfaces
+- **Extensible**: Easy to add new data sources (REST API, GraphQL, WebSocket)
+
+See [QUEST_DATA_SERVICE.md](./QUEST_DATA_SERVICE.md) for detailed documentation.
+
+### Key Features:
+✅ Separation of concerns - components don't handle data fetching  
+✅ Environment-based source switching (mock CSV vs Google Sheets)  
+✅ Automatic polling every 3 minutes  
+✅ Clean abstraction for future enhancements
 
 ## Development Notes
 

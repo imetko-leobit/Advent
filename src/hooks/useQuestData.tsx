@@ -35,8 +35,15 @@ export const useQuestData = () => {
       return;
     }
     
-    const response = await fetch(dataUrl);
     try {
+      const response = await fetch(dataUrl);
+      
+      if (!response.ok) {
+        console.error(`Error fetching CSV: HTTP ${response.status}`);
+        stopLoading();
+        return;
+      }
+      
       const csvData = await response.text();
       Papa.parse(csvData, {
         header: true,

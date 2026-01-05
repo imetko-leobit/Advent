@@ -6,7 +6,11 @@ export const positionMapper = (
   jsonData: IRowData[]
 ): IUserDataWithPostition[] => {
   const dataWithUserPosition = jsonData
-    .filter((rowData: IRowData) => rowData["Email Address"]) // Filter out rows without email
+    .filter((rowData: IRowData) => {
+      const email = rowData["Email Address"];
+      // Filter out rows without email or with invalid email format
+      return email && typeof email === "string" && email.includes("@");
+    })
     .map((rowData: IRowData) => {
       const email = rowData["Email Address"];
       const leobitUserId = email.split("@")[0];

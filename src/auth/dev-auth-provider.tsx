@@ -14,10 +14,10 @@ const createMockUser = (): User => {
       email: "dev@leobit.com",
       name: "Dev User",
     },
-    // Add minimal required User properties
-    id_token: "mock-id-token",
+    // Mock tokens with clear DEV prefixes to prevent confusion with real tokens
+    id_token: "DEV_MOCK_ID_TOKEN",
     session_state: null,
-    access_token: "mock-access-token",
+    access_token: "DEV_MOCK_ACCESS_TOKEN",
     token_type: "Bearer",
     scope: "quest openid profile",
     expires_at: Math.floor(Date.now() / 1000) + 3600, // 1 hour from now

@@ -3,6 +3,7 @@ import { UserPointer } from "./UserPointer";
 import { motion } from "framer-motion";
 import { IMapTaskPosition, IUserInGroupData } from "../../consts";
 import { useAuth } from "react-oidc-context";
+import { finishScreenService, userProgressService } from "../../domain";
 
 interface IProps {
   stackedPointersRef: RefObject<HTMLDivElement>;
@@ -37,14 +38,18 @@ export const StackedPointers: FC<IProps> = ({
 
   const filterUserPointers = () => {
     const loggedUserId = user?.profile.sub;
-    if (group.taskNumber === 9 || group.taskNumber === 14) {
-      const filteredUsers = group.users.filter((u) => u.id !== loggedUserId);
-      const findLoggedUser = group.users.find((u) => u.id == loggedUserId);
-      setUsersWithoutLoggedUser(filteredUsers);
-      setLoggedUser(findLoggedUser);
-    } else {
-      setUsersWithoutLoggedUser(group.users);
-    }
+    if (!loggedUserId) return;
+
+    const shouldSeparate = finishScreenService.isSpecialTask(group.taskNumber);
+    const { regularUsers, loggedUser: foundLoggedUser } = 
+      userProgressService.filterUsersAtPosition(
+        group.users,
+        loggedUserId,
+        shouldSeparate
+      );
+
+    setUsersWithoutLoggedUser(regularUsers);
+    setLoggedUser(foundLoggedUser);
   };
 
   useEffect(() => {

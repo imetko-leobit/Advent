@@ -2,7 +2,7 @@ import { FC, useEffect, useRef, useState } from "react";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { motion } from "framer-motion";
 
-import { IMapTaskPosition, finishScreenTypes } from "../consts";
+import { IMapTaskPosition } from "../consts";
 import { FinishScreen } from "./FinishScreen/FinishScreen";
 import { useLoading } from "../context/LoadingContext";
 import MapSvg from "../assets/map/Map.svg";
@@ -12,6 +12,7 @@ import { Girl } from "./Animation/Girl/Girl";
 import { PointersModal } from "./PointersModal/PointersModal";
 import { Step } from "./Step/Step";
 import { StackedPointers } from "./StackedPointers/StackedPointers";
+import { finishScreenService } from "../domain";
 
 interface IProps {
   tableData?: IMapTaskPosition[];
@@ -50,21 +51,15 @@ export const SVGMap: FC<IProps> = ({ tableData, setIsGameButtonVisible }) => {
   }, [setIsGameButtonVisible]);
 
   const handleCloseClick = () => {
-    if (finishScreenType === finishScreenTypes.dzen) {
-      setUserPointerFinishAnimationCoordintes({
-        top: "38%",
-        left: "245%",
-      });
+    const coordinates = finishScreenService.getFinishAnimationCoordinates(
+      finishScreenType,
+      loggedUserTaskNumber
+    );
+
+    if (coordinates) {
+      setUserPointerFinishAnimationCoordintes(coordinates);
     }
-    if (
-      finishScreenType === finishScreenTypes.finish &&
-      loggedUserTaskNumber === 9
-    ) {
-      setUserPointerFinishAnimationCoordintes({
-        top: "130%",
-        left: "-75%",
-      });
-    }
+
     setFinishScreenType("");
     setFirstFinishScreenShow(false);
   };

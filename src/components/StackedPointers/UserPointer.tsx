@@ -2,7 +2,7 @@ import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 
 import { IUserInGroupData } from "../../consts";
-import { uiConfig } from "../../config";
+import { uiConfig, questConfig } from "../../config";
 import { UserTooltip } from "../UserTooltip/UserTooltip";
 import { useLoading } from "../../context/LoadingContext";
 import { calcPointerHoverPosition } from "../../helpers/calculateHoverPostion";
@@ -57,7 +57,8 @@ export const UserPointer: FC<IProps> = ({
 
     if (finishConfig.shouldShow) {
       setFinishScreenType(finishConfig.type);
-      if (finishConfig.taskNumber === 9) {
+      // Set task number for first finish task to track animation
+      if (finishConfig.taskNumber === questConfig.firstFinishTaskId) {
         setLoggedUserTaskNumber(finishConfig.taskNumber);
       }
     }

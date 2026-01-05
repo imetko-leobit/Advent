@@ -4,20 +4,16 @@
  */
 
 import { finishScreenTypes } from "../consts";
+import { questConfig } from "../config";
 import { AnimationCoordinates, FinishScreenConfig } from "./interfaces";
 
 export class FinishScreenService {
   /**
-   * Special task numbers that trigger finish screens
-   */
-  private readonly FIRST_FINISH_TASK = 9;
-  private readonly FINAL_FINISH_TASK = 14;
-
-  /**
    * Checks if a task is a special task (finish screen task)
+   * Uses quest configuration to determine finish tasks
    */
   isSpecialTask(taskNumber: number): boolean {
-    return taskNumber === this.FIRST_FINISH_TASK || taskNumber === this.FINAL_FINISH_TASK;
+    return questConfig.finalTaskIds.includes(taskNumber);
   }
 
   /**
@@ -40,7 +36,7 @@ export class FinishScreenService {
       };
     }
 
-    if (taskNumber >= this.FIRST_FINISH_TASK && taskNumber < this.FINAL_FINISH_TASK) {
+    if (taskNumber >= questConfig.firstFinishTaskId && taskNumber < questConfig.finalFinishTaskId) {
       return {
         type: finishScreenTypes.finish,
         taskNumber,
@@ -48,7 +44,7 @@ export class FinishScreenService {
       };
     }
 
-    if (taskNumber === this.FINAL_FINISH_TASK) {
+    if (taskNumber === questConfig.finalFinishTaskId) {
       return {
         type: finishScreenTypes.dzen,
         taskNumber,
@@ -71,17 +67,11 @@ export class FinishScreenService {
     taskNumber: number
   ): AnimationCoordinates | null {
     if (screenType === finishScreenTypes.dzen) {
-      return {
-        top: "38%",
-        left: "245%",
-      };
+      return questConfig.finishAnimations.finalFinish;
     }
 
-    if (screenType === finishScreenTypes.finish && taskNumber === this.FIRST_FINISH_TASK) {
-      return {
-        top: "130%",
-        left: "-75%",
-      };
+    if (screenType === finishScreenTypes.finish && taskNumber === questConfig.firstFinishTaskId) {
+      return questConfig.finishAnimations.firstFinish;
     }
 
     return null;

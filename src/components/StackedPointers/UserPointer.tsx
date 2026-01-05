@@ -2,7 +2,7 @@ import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 
 import { IUserInGroupData } from "../../consts";
-import { coloredPointers } from "../../consts/colors";
+import { uiConfig } from "../../config";
 import { UserTooltip } from "../UserTooltip/UserTooltip";
 import { useLoading } from "../../context/LoadingContext";
 import { calcPointerHoverPosition } from "../../helpers/calculateHoverPostion";
@@ -114,8 +114,8 @@ export const UserPointer: FC<IProps> = ({
         )}
         <img
           src={
-            coloredPointers[socialNetworkPoint][
-              index % coloredPointers[0].length
+            uiConfig.pointers.colored[socialNetworkPoint][
+              index % uiConfig.pointers.colored[0].length
             ]
           }
           style={{

@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { IMapTaskPosition } from "../consts";
 import { FinishScreen } from "./FinishScreen/FinishScreen";
 import { useLoading } from "../context/LoadingContext";
-import MapSvg from "../assets/map/Map.svg";
+import { uiConfig } from "../config";
 import { Stars } from "./Animation/Stars/Stars";
 import { Clouds } from "./Animation/Clouds/Clouds";
 import { Girl } from "./Animation/Girl/Girl";
@@ -112,7 +112,7 @@ export const SVGMap: FC<IProps> = ({ tableData, setIsGameButtonVisible }) => {
         )}
         <div>
           <img
-            src={MapSvg}
+            src={uiConfig.map.mapSvg}
             style={{
               height: "100%",
               width: "100%",

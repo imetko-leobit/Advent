@@ -1,42 +1,43 @@
 import { motion } from "framer-motion";
-import GirlSvg from "../../../assets/girl-with-shadow/Girl.svg";
-import Shadow from "../../../assets/girl-with-shadow/Shadow.svg";
+import { uiConfig } from "../../../config";
 
 export const Girl = () => {
+  const { character } = uiConfig.animations;
+
   return (
     <div>
       <motion.img
-        src={Shadow}
+        src={character.shadow}
         style={{
           position: "absolute",
-          left: "81%",
-          top: "37%",
-          height: "2%",
+          left: character.shadowPosition.left,
+          top: character.shadowPosition.top,
+          height: character.shadowPosition.height,
         }}
-        alt="Cloud"
-        initial={{ scale: 0.8 }}
-        animate={{ scale: 1.2 }}
+        alt="Shadow"
+        initial={{ scale: character.shadowAnimation.scaleFrom }}
+        animate={{ scale: character.shadowAnimation.scaleTo }}
         transition={{
           ease: "linear",
-          duration: 4,
+          duration: character.shadowAnimation.duration,
           repeat: Infinity,
           repeatType: "reverse",
         }}
       />
       <motion.img
-        src={GirlSvg}
+        src={character.image}
         style={{
           position: "absolute",
-          left: "79.3%",
-          top: "28%",
-          height: "15%",
+          left: character.position.left,
+          top: character.position.top,
+          height: character.position.height,
         }}
         alt="Girl"
-        initial={{ translateY: "-45%" }}
-        animate={{ translateY: "-40%" }}
+        initial={{ translateY: character.animation.translateFrom }}
+        animate={{ translateY: character.animation.translateTo }}
         transition={{
           ease: "linear",
-          duration: 4,
+          duration: character.animation.duration,
           repeat: Infinity,
           repeatType: "reverse",
         }}

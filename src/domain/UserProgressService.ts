@@ -3,7 +3,7 @@
  * Handles user progress mapping and position calculations
  */
 
-import { initialMapTaskPositions } from "../consts/taskPositions";
+import { uiConfig } from "../config";
 import { TaskPosition, UserProgress, UserInGroup } from "./interfaces";
 import { avatarService } from "./AvatarService";
 
@@ -15,9 +15,9 @@ export class UserProgressService {
    * @returns Array of task positions with users
    */
   mapUsersToPositions(users: UserProgress[], loggedUserId: string): TaskPosition[] {
-    // Deep clone initial positions to avoid mutating the original
+    // Deep clone task positions from config to avoid mutating the original
     const mapTaskPositions: TaskPosition[] = JSON.parse(
-      JSON.stringify(initialMapTaskPositions)
+      JSON.stringify(uiConfig.taskPositions)
     );
 
     users.forEach((userData) => {

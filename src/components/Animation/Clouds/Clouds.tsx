@@ -1,85 +1,34 @@
 import { motion } from "framer-motion";
-import Cloud from "../../../assets/clouds/Cloud.svg";
+import { uiConfig, getCloudImage } from "../../../config";
 
 export const Clouds = () => {
+  const cloudImage = getCloudImage();
+  const { clouds } = uiConfig.animations;
+
   return (
     <div>
-      <motion.img
-        src={Cloud}
-        style={{
-          position: "absolute",
-          top: "25%",
-          left: "70%",
-          height: "5%",
-          width: "5%",
-        }}
-        alt="Cloud"
-        initial={{ translateX: "-40%" }}
-        animate={{ translateX: "20%" }}
-        transition={{
-          ease: "linear",
-          duration: 5,
-          repeat: Infinity,
-          repeatType: "reverse",
-        }}
-      />
-      <motion.img
-        src={Cloud}
-        style={{
-          position: "absolute",
-          top: "20%",
-          left: "60%",
-          height: "7%",
-          width: "7%",
-        }}
-        alt="Cloud"
-        initial={{ translateX: "-40%" }}
-        animate={{ translateX: "20%" }}
-        transition={{
-          ease: "linear",
-          duration: 7,
-          repeat: Infinity,
-          repeatType: "reverse",
-        }}
-      />
-      <motion.img
-        src={Cloud}
-        style={{
-          position: "absolute",
-          top: "30%",
-          left: "25%",
-          height: "6%",
-          width: "6%",
-        }}
-        alt="Cloud"
-        initial={{ translateX: "-30%" }}
-        animate={{ translateX: "30%" }}
-        transition={{
-          ease: "linear",
-          duration: 9,
-          repeat: Infinity,
-          repeatType: "reverse",
-        }}
-      />
-      <motion.img
-        src={Cloud}
-        style={{
-          position: "absolute",
-          top: "42%",
-          left: "13%",
-          height: "8%",
-          width: "8%",
-        }}
-        alt="Cloud"
-        initial={{ translateX: "-40%" }}
-        animate={{ translateX: "20%" }}
-        transition={{
-          ease: "linear",
-          duration: 8,
-          repeat: Infinity,
-          repeatType: "reverse",
-        }}
-      />
+      {clouds.map((cloud, index) => (
+        <motion.img
+          key={index}
+          src={cloudImage}
+          style={{
+            position: "absolute",
+            top: cloud.top,
+            left: cloud.left,
+            height: cloud.height,
+            width: cloud.width,
+          }}
+          alt="Cloud"
+          initial={{ translateX: cloud.translateFrom }}
+          animate={{ translateX: cloud.translateTo }}
+          transition={{
+            ease: "linear",
+            duration: cloud.duration,
+            repeat: Infinity,
+            repeatType: "reverse",
+          }}
+        />
+      ))}
     </div>
   );
 };

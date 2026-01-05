@@ -1,9 +1,7 @@
 import { FC } from "react";
 import { motion } from "framer-motion";
-import { svgSteps } from "../../consts/svgSteps";
+import { uiConfig } from "../../config";
 import { IMapTaskPosition, IUserInGroupData } from "../../consts";
-import PurpleStepShadow from "../../assets/pointers-shadow/Purple.svg";
-import GreenStepShadow from "../../assets/pointers-shadow/Green.svg";
 import { useAuth } from "react-oidc-context";
 
 interface IProps {
@@ -21,6 +19,11 @@ export const Step: FC<IProps> = ({ group, groupIndex }) => {
       type: "linear",
     },
   };
+
+  // Get step shadow based on configuration
+  const stepShadow = groupIndex < uiConfig.steps.shadow.greenThreshold 
+    ? uiConfig.steps.shadow.green 
+    : uiConfig.steps.shadow.purple;
 
   return (
     <div>
@@ -41,7 +44,7 @@ export const Step: FC<IProps> = ({ group, groupIndex }) => {
           whileHover={hoverAnimation}
         >
           <img
-            src={svgSteps[groupIndex]}
+            src={uiConfig.steps.images[groupIndex]}
             style={{
               position: "relative",
               height: "100%",
@@ -55,7 +58,7 @@ export const Step: FC<IProps> = ({ group, groupIndex }) => {
             ) && (
               <>
                 <motion.img
-                  src={groupIndex < 10 ? GreenStepShadow : PurpleStepShadow}
+                  src={stepShadow}
                   style={{
                     position: "absolute",
                     height: "120%",
@@ -75,7 +78,7 @@ export const Step: FC<IProps> = ({ group, groupIndex }) => {
                 />
 
                 <motion.img
-                  src={groupIndex < 10 ? GreenStepShadow : PurpleStepShadow}
+                  src={stepShadow}
                   style={{
                     position: "absolute",
                     height: "140%",

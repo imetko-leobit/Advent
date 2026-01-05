@@ -96,17 +96,28 @@ export class QuestDataService implements IQuestDataService {
     this.onDataUpdateCallback = callback;
 
     // Fetch initial data
-    this.fetchData().then((data) => {
-      this.currentData = data;
-      this.onDataUpdateCallback?.(data);
-    });
+    this.fetchData()
+      .then((data) => {
+        this.currentData = data;
+        this.onDataUpdateCallback?.(data);
+      })
+      .catch((error) => {
+        console.error("[QuestDataService] Error during initial fetch:", error);
+        // Still call callback with empty array to signal completion
+        this.onDataUpdateCallback?.([]);
+      });
 
     // Set up polling interval
     this.pollingIntervalId = window.setInterval(() => {
-      this.fetchData().then((data) => {
-        this.currentData = data;
-        this.onDataUpdateCallback?.(data);
-      });
+      this.fetchData()
+        .then((data) => {
+          this.currentData = data;
+          this.onDataUpdateCallback?.(data);
+        })
+        .catch((error) => {
+          console.error("[QuestDataService] Error during polling fetch:", error);
+          // Continue with cached data on error
+        });
     }, this.config.pollingIntervalMs);
   }
 

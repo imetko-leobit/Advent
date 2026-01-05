@@ -5,7 +5,7 @@ import { DataSourceType, QuestDataServiceConfig } from "./types";
  * Determines the appropriate data source URL based on environment
  * - If VITE_GOOGLE_SHEET_URL is set, use it (production)
  * - If in DEV mode and no URL is set, use local mock CSV
- * - Otherwise, return empty string (error case)
+ * - Otherwise, throw error (production misconfiguration)
  */
 const getDataSourceUrl = (): string => {
   const googleSheetUrl = import.meta.env.VITE_GOOGLE_SHEET_URL;
@@ -21,9 +21,10 @@ const getDataSourceUrl = (): string => {
     return "/mock-quest-data.csv";
   }
 
-  // Production fallback - should not happen in normal operation
-  console.error("[QuestDataService] VITE_GOOGLE_SHEET_URL is not configured");
-  return "";
+  // Production error - environment variable is required
+  throw new Error(
+    "[QuestDataService] VITE_GOOGLE_SHEET_URL must be configured in production"
+  );
 };
 
 /**

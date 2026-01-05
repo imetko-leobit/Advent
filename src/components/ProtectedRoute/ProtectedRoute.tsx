@@ -27,9 +27,12 @@ export const ProtectedRoute: FC<ProtectedRouteProps> = ({ children }) => {
   const location = useLocation();
 
   useEffect(() => {
+    // Early return during loading to prevent any redirect logic from executing
+    if (isLoading) return;
+    
     // Wait for auth to initialize before making any routing decisions
     // This prevents redirects during OIDC state resolution
-    if (!isLoading && !isAuthenticated) {
+    if (!isAuthenticated) {
       const currentPath = location.pathname;
       // Only redirect if we're not already on the login page
       if (currentPath !== PathsEnum.login) {

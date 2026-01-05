@@ -36,13 +36,16 @@ export const Login: FC = () => {
   const continueUri = returnUrl !== PathsEnum.login && returnUrl;
 
   useEffect(() => {
+    // Early return during loading to prevent any redirect logic from executing
+    if (isLoading) return;
+    
     // If authenticated, navigate to the intended destination
-    if (isAuthenticated && !isLoading) {
+    if (isAuthenticated) {
       window.history.replaceState({}, document.title, location.pathname);
       navigate(userState?.continueUri || routes.quest.path, { replace: true });
     } 
     // If not authenticated and not loading, initiate signin (but only once)
-    else if (!isAuthenticated && !isLoading && !hasInitiatedSignin.current) {
+    else if (!isAuthenticated && !hasInitiatedSignin.current) {
       hasInitiatedSignin.current = true;
       const state: LoginRedirectState = {
         continueUri: continueUri || PathsEnum.quest,

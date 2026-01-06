@@ -107,8 +107,8 @@ export function getAuthConfig(): AuthConfig {
     validateOidcConfig(authority, redirectUri);
   }
   
-  // Log auth mode for debugging (DEV mode only)
-  if (import.meta.env.DEV) {
+  // Log auth mode for debugging (only in development builds)
+  if (isDevMode()) {
     console.log(`[Auth] Mode: ${mode.toUpperCase()}`);
     if (mode === 'dev') {
       console.log('[Auth] Using DEV mode - authentication bypassed');

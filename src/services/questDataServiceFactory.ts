@@ -4,6 +4,12 @@ import { DataSourceType, QuestDataServiceConfig, QuestDataProvider } from "./typ
 import { isDevMode } from "../auth/authConfig";
 
 /**
+ * Polling disabled constant - used to effectively disable polling in DEV mode
+ * By setting an extremely high interval, polling will not occur during normal usage
+ */
+const POLLING_DISABLED = Number.MAX_SAFE_INTEGER;
+
+/**
  * Determines the appropriate data source URL based on environment
  * - If VITE_DEV_MODE=true, use local mock CSV
  * - If VITE_GOOGLE_SHEET_URL is set, use it (production)
@@ -68,7 +74,7 @@ const createDataProvider = (
 /**
  * Factory function to create a configured QuestDataService instance
  * Automatically detects the appropriate data source based on environment variables
- * In DEV mode, polling is disabled (interval set to effectively infinite)
+ * In DEV mode, polling is disabled (interval set to POLLING_DISABLED constant)
  */
 export const createQuestDataService = (
   customConfig?: Partial<QuestDataServiceConfig>
@@ -76,9 +82,9 @@ export const createQuestDataService = (
   const config: QuestDataServiceConfig = {
     dataSourceType: getDataSourceType(),
     dataSourceUrl: getDataSourceUrl(),
-    // Disable polling in DEV mode by setting a very high interval
-    // In production, use default (or custom) polling interval
-    pollingIntervalMs: isDevMode() ? Number.MAX_SAFE_INTEGER : undefined,
+    // Disable polling in DEV mode - mock data doesn't change during development
+    // In production, use default (or custom) polling interval for live data updates
+    pollingIntervalMs: isDevMode() ? POLLING_DISABLED : undefined,
     ...customConfig,
   };
 

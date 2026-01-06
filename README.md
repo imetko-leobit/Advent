@@ -11,6 +11,7 @@ A gamified wellness tracking application that helps teams visualize and celebrat
 - [Data Layer & Sources](#data-layer--sources)
 - [Dynamic Configuration & Data Switching](#dynamic-configuration--data-switching)
 - [Quest Logic & Progression](#quest-logic--progression)
+- [Observability](#observability)
 - [UI Customization](#ui-customization)
 - [Project Structure](#project-structure)
 - [Common Issues & Troubleshooting](#common-issues--troubleshooting)
@@ -40,6 +41,77 @@ After recent refactoring, the application is built with these principles:
 ✅ **DEV/PROD Separation** - Works seamlessly in development without external dependencies  
 ✅ **No Infrastructure Lock-in** - No hard dependency on any specific company's infrastructure  
 ✅ **Clean Architecture** - Domain logic separated from UI, services abstracted from components
+
+### High-Level Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        PRESENTATION LAYER                        │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │  React Components (Map, Quest, FinishScreen, etc.)      │  │
+│  │  - Plug-and-play UI components                           │  │
+│  │  - Configuration-driven rendering                        │  │
+│  └────────────────────┬─────────────────────────────────────┘  │
+│                       │ Props & Hooks                           │
+└───────────────────────┼─────────────────────────────────────────┘
+                        │
+┌───────────────────────┼─────────────────────────────────────────┐
+│                       ▼     SERVICE LAYER                        │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │  QuestDataService (Factory Pattern)                      │  │
+│  │  - Auto-configuration based on environment               │  │
+│  │  - Data polling (3-minute intervals)                     │  │
+│  │  - Provider abstraction                                  │  │
+│  └────────┬──────────────────┬───────────────────┬──────────┘  │
+│           │                  │                   │              │
+│  ┌────────▼────────┐ ┌──────▼──────┐ ┌─────────▼─────────┐    │
+│  │ MockCSVProvider │ │GoogleSheets │ │  APIProvider      │    │
+│  │ (Development)   │ │ Provider    │ │  (Custom APIs)    │    │
+│  └─────────────────┘ └─────────────┘ └───────────────────┘    │
+└─────────────────────────────────────────────────────────────────┘
+                        │
+┌───────────────────────┼─────────────────────────────────────────┐
+│                       ▼     DOMAIN LAYER                         │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │  QuestEngine (Pure Business Logic)                       │  │
+│  │  - Framework-independent                                 │  │
+│  │  - No React, no side effects                             │  │
+│  │  - Single source of truth for quest rules               │  │
+│  └────────┬──────────────────┬───────────────────┬──────────┘  │
+│           │                  │                   │              │
+│  ┌────────▼────────┐ ┌──────▼──────┐ ┌─────────▼─────────┐    │
+│  │ TaskEvaluation  │ │UserProgress │ │ FinishScreen      │    │
+│  │ Service         │ │  Service    │ │   Service         │    │
+│  └─────────────────┘ └─────────────┘ └───────────────────┘    │
+└─────────────────────────────────────────────────────────────────┘
+                        │
+┌───────────────────────┼─────────────────────────────────────────┐
+│                       ▼     CONFIGURATION LAYER                  │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │  quest.config.ts          │  uiConfig.ts                 │  │
+│  │  - Task definitions       │  - Map & visual assets       │  │
+│  │  - Finish task IDs        │  - Task positions            │  │
+│  │  - Quest metadata         │  - Animations                │  │
+│  └───────────────────────────┴──────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────┘
+                        │
+┌───────────────────────┼─────────────────────────────────────────┐
+│                       ▼     AUTHENTICATION LAYER                 │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │  AuthProvider (Dual-mode)                                │  │
+│  │  ┌────────────────┐    ┌──────────────────┐             │  │
+│  │  │ DEV Mode       │ OR │ OIDC Mode        │             │  │
+│  │  │ (Mock Auth)    │    │ (Production)     │             │  │
+│  │  └────────────────┘    └──────────────────┘             │  │
+│  └──────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────┘
+
+Key Principles:
+  → Clean separation of concerns
+  → Top-down dependency flow (UI → Services → Domain → Config)
+  → Configuration-driven behavior
+  → No circular dependencies
+```
 
 ---
 
@@ -653,6 +725,439 @@ The quest has **special milestone tasks** that trigger finish screens:
 - Rows without valid email addresses
 - Columns not matching task pattern
 - Metadata columns (name, social points, etc.)
+
+---
+
+## Observability
+
+The application includes comprehensive logging and error handling to help you debug issues and monitor application behavior.
+
+### Logging System
+
+**Location:** `/src/utils/logger.ts`
+
+The application uses a structured logging utility that provides consistent, grouped logging across all components and services.
+
+#### Log Levels
+
+The logger supports four log levels with increasing severity:
+
+- **DEBUG** - Detailed debugging information (disabled by default)
+- **INFO** - General informational messages (default level)
+- **WARN** - Warning messages for potential issues
+- **ERROR** - Error messages with stack traces
+
+#### Using the Logger
+
+Import and use the logger in your code:
+
+```typescript
+import { logger } from './utils/logger';
+
+// Info message
+logger.info('ComponentName', 'User logged in successfully');
+
+// Warning message
+logger.warn('ServiceName', 'Data fetch took longer than expected');
+
+// Error message with error object
+logger.error('ComponentName', 'Failed to load data', error);
+
+// Debug message (only shown if DEBUG level enabled)
+logger.debug('ServiceName', 'Processing user data', userData);
+```
+
+#### Grouped Logging
+
+Use groups to organize related logs:
+
+```typescript
+logger.group('🔄 Data Refresh');
+logger.info('QuestDataService', 'Starting data fetch...');
+logger.info('QuestDataService', 'Data fetched successfully');
+logger.groupEnd();
+```
+
+#### Configuring Log Levels
+
+**During Development:**
+
+To see all logs including DEBUG:
+
+```typescript
+// In your browser console
+import { logger, LogLevel } from './utils/logger';
+logger.setMinLevel(LogLevel.DEBUG);
+```
+
+**Or modify the logger initialization:**
+
+```typescript
+// In src/utils/logger.ts
+export const logger = new Logger({
+  enabled: true,
+  minLevel: LogLevel.DEBUG, // Change to DEBUG for development
+});
+```
+
+**In Production:**
+
+Set to ERROR or WARN to reduce console noise:
+
+```typescript
+export const logger = new Logger({
+  enabled: true,
+  minLevel: LogLevel.ERROR,
+});
+```
+
+#### Disabling Logging
+
+To completely disable logging (e.g., for production builds):
+
+```typescript
+logger.setEnabled(false);
+```
+
+### Error Handling
+
+The application uses multiple layers of error handling to provide a robust user experience.
+
+#### Error Boundary
+
+**Location:** `/src/components/ErrorBoundary/ErrorBoundary.tsx`
+
+React Error Boundary catches JavaScript errors anywhere in the component tree and displays a fallback UI.
+
+**Features:**
+- Catches and logs all React rendering errors
+- Displays user-friendly error message
+- Shows detailed error information for debugging
+- Prevents entire app from crashing
+
+**Usage in components:**
+
+```typescript
+import { ErrorBoundary } from './components/ErrorBoundary';
+
+<ErrorBoundary>
+  <YourComponent />
+</ErrorBoundary>
+```
+
+**Custom fallback UI:**
+
+```typescript
+<ErrorBoundary fallback={<div>Custom error message</div>}>
+  <YourComponent />
+</ErrorBoundary>
+```
+
+#### Service-Level Error Handling
+
+All services include try-catch blocks and log errors:
+
+```typescript
+// Example from QuestDataService
+try {
+  const data = await fetchData();
+  logger.info('QuestDataService', 'Data fetched successfully');
+  return data;
+} catch (error) {
+  logger.error('QuestDataService', 'Failed to fetch data', error);
+  throw error; // Re-throw to let components handle it
+}
+```
+
+#### Configuration Validation
+
+Configuration errors are caught and logged with helpful messages:
+
+```typescript
+// Invalid configuration
+logger.error(
+  'ConfigValidator',
+  'Quest configuration is invalid: taskCount must be positive',
+  validationError
+);
+```
+
+### Monitoring Points
+
+Key areas where logging occurs for debugging and monitoring:
+
+#### 1. Application Startup
+
+**Location:** Application initialization in `App.tsx`
+
+```typescript
+logger.group('🚀 Application Startup');
+logger.info('Startup', 'Mode: DEV');
+logger.info('Startup', 'Data Provider: Mock CSV');
+logger.info('Startup', 'Quest: Well Being Quest');
+logger.info('Startup', 'Task Count: 15');
+logger.groupEnd();
+```
+
+**Use this to verify:**
+- Application mode (DEV vs PROD)
+- Data source configuration
+- Quest configuration loaded
+
+#### 2. Authentication Flow
+
+**Location:** Auth providers and context
+
+```typescript
+logger.info('AuthProvider', 'User authenticated', { email: user.email });
+logger.warn('AuthProvider', 'Authentication failed, retrying...');
+logger.error('AuthProvider', 'OIDC configuration error', error);
+```
+
+**Use this to debug:**
+- Login/logout events
+- Auth state changes
+- OIDC flow issues
+- Redirect problems
+
+#### 3. Data Fetching
+
+**Location:** QuestDataService and data providers
+
+```typescript
+logger.info('QuestDataService', 'Fetching quest data from Mock CSV');
+logger.info('QuestDataService', 'Data fetched: 15 users');
+logger.warn('QuestDataService', 'Some data rows invalid, filtered 3 rows');
+logger.error('QuestDataService', 'Failed to fetch data', error);
+```
+
+**Use this to monitor:**
+- Data fetch attempts
+- Data source being used
+- Number of users/rows loaded
+- Data validation issues
+- Network errors
+
+#### 4. Quest Logic Processing
+
+**Location:** QuestEngine and domain services
+
+```typescript
+logger.debug('QuestEngine', 'Processing user progress', { userId, taskNumber });
+logger.warn('QuestEngine', 'Invalid task number detected', { taskNumber, userId });
+logger.info('QuestEngine', 'User reached finish task', { userId, taskNumber: 9 });
+```
+
+**Use this to verify:**
+- User progress calculations
+- Task completion logic
+- Finish state triggers
+- Position grouping
+
+#### 5. Configuration Changes
+
+**Location:** ConfigContext and config loaders
+
+```typescript
+logger.info('ConfigContext', 'Loading quest config from JSON', { url });
+logger.warn('ConfigLoader', 'Invalid config, using fallback', validationError);
+logger.error('ConfigContext', 'Failed to load configuration', error);
+```
+
+**Use this to debug:**
+- Configuration loading
+- Validation failures
+- Fallback behavior
+- Dynamic config changes
+
+### Browser DevTools
+
+#### Console Filtering
+
+Use browser console filters to focus on specific components:
+
+```javascript
+// Filter by component/service name
+// Type in browser console filter: [QuestDataService]
+
+// Filter by log level
+// Type in browser console filter: [ERROR]
+
+// Filter by specific context
+// Type in browser console filter: [AuthProvider]
+```
+
+#### Network Tab
+
+Monitor data fetching in the Network tab:
+
+- **Mock CSV:** Look for `/mock-quest-data.csv` requests
+- **Google Sheets:** Look for `docs.google.com` requests
+- **API Provider:** Look for your custom API endpoint requests
+
+Check:
+- Request status (200 OK, 404 Not Found, etc.)
+- Response data format
+- Response time
+- CORS issues
+
+#### React DevTools
+
+Install React DevTools browser extension to:
+
+- Inspect component tree
+- View component props and state
+- Track component re-renders
+- Debug context values
+
+### Common Debugging Scenarios
+
+#### Scenario 1: Users Not Appearing on Map
+
+**Check these logs:**
+
+```javascript
+// 1. Data fetch logs
+[QuestDataService] Fetching quest data...
+[QuestDataService] Data fetched: X users
+
+// 2. Data validation logs
+[QuestEngine] Processing user progress
+[QuestEngine] Invalid email detected (filtered out)
+
+// 3. Position calculation logs
+[QuestEngine] User position calculated: taskNumber=5
+```
+
+**What to look for:**
+- Number of users fetched vs number displayed
+- Email validation warnings
+- Task number calculation issues
+
+#### Scenario 2: Authentication Issues
+
+**Check these logs:**
+
+```javascript
+// 1. Auth mode detection
+[AuthProvider] Using DEV mode authentication
+// OR
+[AuthProvider] Using OIDC authentication
+
+// 2. Auth state changes
+[AuthProvider] User authenticated: dev@leobit.com
+[AuthProvider] Auth state: authenticated
+
+// 3. Configuration errors
+[AuthConfig] Missing OIDC configuration
+```
+
+**What to look for:**
+- Which auth mode is active
+- Auth state transitions
+- Configuration validation errors
+
+#### Scenario 3: Configuration Not Loading
+
+**Check these logs:**
+
+```javascript
+// 1. Config loading attempt
+[ConfigContext] Loading quest config from /custom-quest.json
+
+// 2. Validation
+[ConfigValidator] Validating quest configuration
+[ConfigValidator] Config validation passed
+
+// 3. Fallback behavior
+[ConfigFallback] Invalid config, using defaults
+```
+
+**What to look for:**
+- File loading errors (404)
+- Validation failures
+- Which fields are invalid
+- Fallback being triggered
+
+### Production Monitoring
+
+#### Recommendations for Production
+
+1. **Set appropriate log level:**
+   ```typescript
+   // Only log warnings and errors in production
+   logger.setMinLevel(LogLevel.WARN);
+   ```
+
+2. **Integrate with monitoring service:**
+   ```typescript
+   // Example: Send errors to external service
+   logger.error = (context, message, error) => {
+     // Log to console
+     console.error(`[${context}] ${message}`, error);
+     
+     // Send to monitoring service
+     if (window.monitoringService) {
+       window.monitoringService.captureError(error, { context, message });
+     }
+   };
+   ```
+
+3. **Monitor key metrics:**
+   - Authentication success/failure rate
+   - Data fetch success/failure rate
+   - Average data fetch time
+   - JavaScript errors caught by ErrorBoundary
+   - Configuration validation failures
+
+4. **Set up alerts for:**
+   - Repeated authentication failures
+   - Data source connection failures
+   - High error rates in browser console
+   - Configuration loading failures
+
+### Logging Best Practices
+
+When adding new features or debugging:
+
+1. **Use appropriate log levels:**
+   - DEBUG: Detailed state information, variable values
+   - INFO: Normal operations, successful actions
+   - WARN: Potential issues, fallback behavior
+   - ERROR: Failures, exceptions, critical problems
+
+2. **Include context:**
+   ```typescript
+   // Good - includes context
+   logger.info('QuestDataService', 'Data fetched: 15 users');
+   
+   // Bad - lacks context
+   logger.info('QuestDataService', 'Data fetched');
+   ```
+
+3. **Use structured data:**
+   ```typescript
+   // Pass objects as additional arguments
+   logger.info('QuestEngine', 'User progress calculated', { 
+     userId, 
+     taskNumber, 
+     position 
+   });
+   ```
+
+4. **Group related logs:**
+   ```typescript
+   logger.group('Data Refresh Cycle');
+   logger.info('Service', 'Starting refresh...');
+   // ... multiple related logs
+   logger.groupEnd();
+   ```
+
+5. **Log errors with full details:**
+   ```typescript
+   logger.error('Component', 'Operation failed', error);
+   // Logger will automatically include stack trace
+   ```
 
 ---
 

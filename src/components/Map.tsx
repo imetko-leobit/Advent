@@ -14,6 +14,7 @@ import { Step } from "./Step/Step";
 import { StackedPointers } from "./StackedPointers/StackedPointers";
 import { questEngine } from "../domain";
 import { MapRenderer, MapPosition } from "./MapRenderer";
+import { EmptyState } from "./EmptyState/EmptyState";
 
 interface IProps {
   tableData?: IMapTaskPosition[];
@@ -77,6 +78,9 @@ export const SVGMap: FC<IProps> = ({ tableData, setIsGameButtonVisible }) => {
       }))
     : [];
 
+  // Show empty state if not loading and no data
+  const showEmptyState = !loading && (!tableData || tableData.length === 0);
+
   return (
     <>
       {/* Intersection observer target for game button visibility */}
@@ -92,22 +96,30 @@ export const SVGMap: FC<IProps> = ({ tableData, setIsGameButtonVisible }) => {
           top: "19%",
         }}
       />
-      <MapRenderer
-        mapImage={uiConfig.map.mapSvg}
-        mapAltText="Quest map showing wellness journey progress"
-        positions={positions}
-        loading={loading}
-        loadingIndicator={
-          <ProgressSpinner
-            style={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-            }}
-            strokeWidth="4"
-          />
-        }
+      
+      {showEmptyState ? (
+        <EmptyState
+          title="No Quest Data"
+          message="No quest progress data is available at the moment. Please check your data source configuration or try refreshing the page."
+          icon="🗺️"
+        />
+      ) : (
+        <MapRenderer
+          mapImage={uiConfig.map.mapSvg}
+          mapAltText="Quest map showing wellness journey progress"
+          positions={positions}
+          loading={loading}
+          loadingIndicator={
+            <ProgressSpinner
+              style={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+              }}
+              strokeWidth="4"
+            />
+          }
         overlayContent={
           finishScreenType && firstFinisScreenShow ? (
             <FinishScreen
@@ -181,6 +193,7 @@ export const SVGMap: FC<IProps> = ({ tableData, setIsGameButtonVisible }) => {
         <Clouds />
         <Girl />
       </MapRenderer>
+      )}
     </>
   );
 };

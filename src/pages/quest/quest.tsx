@@ -22,9 +22,11 @@ export const Quest = () => {
 
   useEffect(() => {
     if (jsonData && user?.profile) {
-      const mappedData = usersDataMapper(jsonData, user?.profile);
-
-      setMappedData(mappedData);
+      const mapped = usersDataMapper(jsonData, user?.profile);
+      setMappedData(mapped);
+    } else if (jsonData && jsonData.length === 0) {
+      // Set to empty array when jsonData is explicitly empty
+      setMappedData([]);
     }
   }, [jsonData, user?.profile]);
 

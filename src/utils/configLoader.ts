@@ -34,19 +34,19 @@ function deepMerge<T>(target: T, source: Partial<T>): T {
   const result = { ...target };
   
   for (const key in source) {
-    if (source.hasOwnProperty(key)) {
+    if (Object.prototype.hasOwnProperty.call(source, key)) {
       const sourceValue = source[key];
       const targetValue = result[key];
       
       if (sourceValue && typeof sourceValue === 'object' && !Array.isArray(sourceValue)) {
         // Recursively merge objects
         result[key] = deepMerge(
-          targetValue || {} as any,
-          sourceValue as any
+          targetValue || {} as T[Extract<keyof T, string>],
+          sourceValue as Partial<T[Extract<keyof T, string>]>
         );
       } else {
         // Overwrite primitives and arrays
-        result[key] = sourceValue as any;
+        result[key] = sourceValue as T[Extract<keyof T, string>];
       }
     }
   }

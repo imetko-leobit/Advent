@@ -217,7 +217,10 @@ export const ConfigProvider: React.FC<ConfigProviderProps> = ({
 
 /**
  * Hook to use configuration context
+ * 
+ * @returns ConfigContextState
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export const useConfig = (): ConfigContextState => {
   const context = useContext(ConfigContext);
   

@@ -7,6 +7,22 @@
  * - OIDC: Real OIDC authentication flow
  */
 
+// Cache the DEV mode flag value - read only once
+let cachedDevMode: boolean | null = null;
+
+/**
+ * Check if DEV mode is enabled.
+ * This value is read once and cached for the lifetime of the application.
+ * 
+ * @returns true if VITE_DEV_MODE=true, false otherwise
+ */
+export function isDevMode(): boolean {
+  if (cachedDevMode === null) {
+    cachedDevMode = import.meta.env.VITE_DEV_MODE === 'true';
+  }
+  return cachedDevMode;
+}
+
 export type AuthMode = 'dev' | 'oidc';
 
 export interface AuthConfig {
@@ -21,14 +37,11 @@ export interface AuthConfig {
  * Determines the authentication mode based on environment variables.
  * 
  * Logic:
- * - If in development mode AND no OIDC authority configured: DEV mode
- * - Otherwise: OIDC mode
+ * - If VITE_DEV_MODE=true: DEV mode (bypasses authentication)
+ * - Otherwise: OIDC mode (real authentication required)
  */
 export function getAuthMode(): AuthMode {
-  const isDev = import.meta.env.DEV;
-  const hasAuthority = !!import.meta.env.VITE_APP_AUTH_AUTHORITY;
-  
-  if (isDev && !hasAuthority) {
+  if (isDevMode()) {
     return 'dev';
   }
   
@@ -64,9 +77,8 @@ function validateOidcConfig(authority?: string, redirectUri?: string): void {
     throw new AuthConfigError(
       `OIDC mode is enabled but required environment variables are missing:\n\n` +
       missing.map(v => `  - ${v}`).join('\n') + '\n\n' +
-      `Please set these values in your .env file or switch to DEV mode by:\n` +
-      `  1. Running in development mode (npm run dev)\n` +
-      `  2. Leaving VITE_APP_AUTH_AUTHORITY empty\n\n` +
+      `Please set these values in your .env file or switch to DEV mode by setting:\n` +
+      `  VITE_DEV_MODE=true\n\n` +
       `See README.md for more information.`
     );
   }
@@ -95,8 +107,8 @@ export function getAuthConfig(): AuthConfig {
     validateOidcConfig(authority, redirectUri);
   }
   
-  // Log auth mode for debugging (DEV mode only)
-  if (import.meta.env.DEV) {
+  // Log auth mode for debugging (when DEV mode is enabled)
+  if (isDevMode()) {
     console.log(`[Auth] Mode: ${mode.toUpperCase()}`);
     if (mode === 'dev') {
       console.log('[Auth] Using DEV mode - authentication bypassed');

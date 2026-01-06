@@ -1,25 +1,27 @@
 import { QuestDataService } from "./QuestDataService";
 import { GoogleSheetsProvider, MockCSVProvider } from "./providers";
 import { DataSourceType, QuestDataServiceConfig, QuestDataProvider } from "./types";
+import { isDevMode } from "../auth/authConfig";
 
 /**
  * Determines the appropriate data source URL based on environment
+ * - If VITE_DEV_MODE=true, use local mock CSV
  * - If VITE_GOOGLE_SHEET_URL is set, use it (production)
- * - If in DEV mode and no URL is set, use local mock CSV
  * - Otherwise, throw error (production misconfiguration)
  */
 const getDataSourceUrl = (): string => {
+  // In DEV mode, always use mock data
+  if (isDevMode()) {
+    console.log(
+      "[QuestDataService] DEV mode - using mock CSV data"
+    );
+    return "/mock-quest-data.csv";
+  }
+
   const googleSheetUrl = import.meta.env.VITE_GOOGLE_SHEET_URL;
 
   if (googleSheetUrl) {
     return googleSheetUrl;
-  }
-
-  if (import.meta.env.DEV) {
-    console.log(
-      "[QuestDataService] Using mock CSV data for local development"
-    );
-    return "/mock-quest-data.csv";
   }
 
   // Production error - environment variable is required
@@ -32,6 +34,11 @@ const getDataSourceUrl = (): string => {
  * Determines the data source type based on environment
  */
 const getDataSourceType = (): DataSourceType => {
+  // In DEV mode, always use mock CSV
+  if (isDevMode()) {
+    return DataSourceType.MOCK_CSV;
+  }
+
   const googleSheetUrl = import.meta.env.VITE_GOOGLE_SHEET_URL;
 
   if (googleSheetUrl) {
@@ -61,6 +68,7 @@ const createDataProvider = (
 /**
  * Factory function to create a configured QuestDataService instance
  * Automatically detects the appropriate data source based on environment variables
+ * In DEV mode, polling is disabled (interval set to effectively infinite)
  */
 export const createQuestDataService = (
   customConfig?: Partial<QuestDataServiceConfig>
@@ -68,10 +76,17 @@ export const createQuestDataService = (
   const config: QuestDataServiceConfig = {
     dataSourceType: getDataSourceType(),
     dataSourceUrl: getDataSourceUrl(),
+    // Disable polling in DEV mode by setting a very high interval
+    // In production, use default (or custom) polling interval
+    pollingIntervalMs: isDevMode() ? Number.MAX_SAFE_INTEGER : undefined,
     ...customConfig,
   };
 
   const provider = createDataProvider(config.dataSourceType, config.dataSourceUrl);
+
+  if (isDevMode()) {
+    console.log("[QuestDataService] DEV mode - polling disabled");
+  }
 
   return new QuestDataService(config, provider);
 };

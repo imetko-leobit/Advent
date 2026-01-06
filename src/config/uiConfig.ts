@@ -178,6 +178,8 @@ export interface UIConfig {
   finishScreens: FinishScreenConfig;
   pointers: {
     colored: string[][];  // [socialNetworkPoint][colorIndex]
+    maxVisibleInTooltip: number;  // Maximum users shown in hover tooltip
+    maxBeforeModal: number;  // Maximum users before showing modal
   };
   avatar: {
     fallbackUrl?: string;  // Optional fallback if avatar is missing
@@ -447,6 +449,9 @@ export const uiConfig: UIConfig = {
       [two_red, two_yellow, two_cyan, two_green, two_orange, two_purple],
       [three_red, three_yellow, three_cyan, three_green, three_orange, three_purple],
     ],
+    // UI thresholds for user display
+    maxVisibleInTooltip: 5,  // Show tooltips only for first 5 users
+    maxBeforeModal: 5,        // Show modal if more than 5 users at position
   },
 
   // Avatar configuration

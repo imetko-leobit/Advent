@@ -76,7 +76,7 @@ export const UserPointer: FC<IProps> = ({
     stopLoading();
   }, [handleFinishScreenType, loggedUser, stopLoading, taskNumber]);
 
-  const showNameTooltip = isTooltipVisible && name && index < 5;
+  const showNameTooltip = isTooltipVisible && name && index < uiConfig.pointers.maxVisibleInTooltip;
 
   return (
     <motion.div

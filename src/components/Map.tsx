@@ -136,7 +136,7 @@ export const SVGMap: FC<IProps> = ({ tableData, setIsGameButtonVisible }) => {
             >
               {hoverIndex === index &&
                 isModalVisible &&
-                group.users.length > 5 && (
+                group.users.length > uiConfig.pointers.maxBeforeModal && (
                   <PointersModal
                     users={group.users}
                     setIsModalVisible={setIsModalVisible}
@@ -165,7 +165,7 @@ export const SVGMap: FC<IProps> = ({ tableData, setIsGameButtonVisible }) => {
           return (
             <div
               onClick={() => {
-                if (group.users.length > 5) {
+                if (group.users.length > uiConfig.pointers.maxBeforeModal) {
                   handleOpenModal();
                 }
               }}

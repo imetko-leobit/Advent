@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { IMapTaskPosition, IUserInGroupData } from "../../consts";
 import { useAuthContext } from "../../auth/AuthContext";
 import { questEngine } from "../../domain";
+import { uiConfig } from "../../config";
 
 interface IProps {
   stackedPointersRef: RefObject<HTMLDivElement>;
@@ -59,6 +60,11 @@ export const StackedPointers: FC<IProps> = ({
     }
   }, [group.users]);
 
+  const shouldShowHover = 
+    hoverIndex === groupIndex && 
+    isHover && 
+    group.users.length <= uiConfig.pointers.maxBeforeModal;
+
   return (
     <motion.div
       ref={stackedPointersRef}
@@ -80,9 +86,7 @@ export const StackedPointers: FC<IProps> = ({
           currentUserId={user?.profile.sub}
           user={u}
           index={index}
-          isHover={
-            hoverIndex === groupIndex && isHover && group.users.length < 6
-          }
+          isHover={shouldShowHover}
           totalCount={usersWithoutLoggedUser.length}
           parentDivHeight={parentDivHeight}
           parentDivWidth={parentDivWidth}
@@ -97,9 +101,7 @@ export const StackedPointers: FC<IProps> = ({
           currentUserId={user?.profile.sub}
           user={loggedUser}
           index={0}
-          isHover={
-            hoverIndex === groupIndex && isHover && group.users.length < 6
-          }
+          isHover={shouldShowHover}
           totalCount={1}
           parentDivHeight={parentDivHeight}
           parentDivWidth={parentDivWidth}

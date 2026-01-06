@@ -1,5 +1,6 @@
 import { QuestDataService } from "./QuestDataService";
-import { DataSourceType, QuestDataServiceConfig } from "./types";
+import { GoogleSheetsProvider, MockCSVProvider } from "./providers";
+import { DataSourceType, QuestDataServiceConfig, QuestDataProvider } from "./types";
 
 /**
  * Determines the appropriate data source URL based on environment
@@ -41,6 +42,23 @@ const getDataSourceType = (): DataSourceType => {
 };
 
 /**
+ * Creates the appropriate data provider based on data source type
+ */
+const createDataProvider = (
+  dataSourceType: DataSourceType,
+  dataSourceUrl: string
+): QuestDataProvider => {
+  switch (dataSourceType) {
+    case DataSourceType.GOOGLE_SHEETS:
+      return new GoogleSheetsProvider(dataSourceUrl);
+    case DataSourceType.MOCK_CSV:
+      return new MockCSVProvider(dataSourceUrl);
+    default:
+      throw new Error(`Unsupported data source type: ${dataSourceType}`);
+  }
+};
+
+/**
  * Factory function to create a configured QuestDataService instance
  * Automatically detects the appropriate data source based on environment variables
  */
@@ -53,5 +71,7 @@ export const createQuestDataService = (
     ...customConfig,
   };
 
-  return new QuestDataService(config);
+  const provider = createDataProvider(config.dataSourceType, config.dataSourceUrl);
+
+  return new QuestDataService(config, provider);
 };

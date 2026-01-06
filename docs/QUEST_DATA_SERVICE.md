@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Quest Data Service provides an abstraction layer for fetching and managing quest participant data. It decouples data operations from UI components and hooks, making it easy to switch between different data sources (mock CSV, Google Sheets, or future APIs).
+The Quest Data Service provides an abstraction layer for fetching and managing quest participant data. It uses a **Provider Pattern** to decouple data operations from UI components and hooks, making it easy to switch between different data sources (mock CSV, Google Sheets, or future APIs).
 
 ## Architecture
 
@@ -25,6 +25,13 @@ The Quest Data Service provides an abstraction layer for fetching and managing q
          │
          ▼
 ┌─────────────────┐
+│  Data Providers │  ◄── Provider Abstraction
+│  (GoogleSheets, │
+│   MockCSV, etc) │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
 │  Data Sources   │
 │ (CSV/Sheets/API)│
 └─────────────────┘
@@ -32,22 +39,38 @@ The Quest Data Service provides an abstraction layer for fetching and managing q
 
 ## Key Components
 
-### 1. QuestDataService
+### 1. QuestDataProvider Interface
 
-The main service class that handles all data operations.
+The core abstraction that defines how data should be fetched from any source.
+
+```typescript
+interface QuestDataProvider {
+  fetchQuestData(): Promise<IRowData[]>;
+}
+```
+
+**Implementations:**
+- `GoogleSheetsProvider` - Fetches data from Google Sheets CSV export
+- `MockCSVProvider` - Fetches data from local mock CSV file
+- Future: `RestAPIProvider`, `GraphQLProvider`, etc.
+
+### 2. QuestDataService
+
+The main service class that handles all data operations using a provider.
 
 **Features:**
-- Fetches data from configurable sources
-- Parses CSV data into typed objects
+- Uses providers to fetch data from configurable sources
 - Manages polling for automatic updates
 - Caches data for immediate access
+- Handles errors gracefully
 
-### 2. Service Factory
+### 3. Service Factory
 
-`createQuestDataService()` - Factory function that automatically configures the service based on environment variables.
+`createQuestDataService()` - Factory function that automatically configures the service and provider based on environment variables.
 
-### 3. Types and Interfaces
+### 4. Types and Interfaces
 
+- `QuestDataProvider` - Interface defining provider contract
 - `IQuestDataService` - Interface defining service contract
 - `DataSourceType` - Enum for data source types (MOCK_CSV, GOOGLE_SHEETS)
 - `QuestDataServiceConfig` - Configuration interface
@@ -150,6 +173,32 @@ The service automatically determines the data source based on environment variab
 
 ## API Reference
 
+### QuestDataProvider Interface
+
+```typescript
+interface QuestDataProvider {
+  fetchQuestData(): Promise<IRowData[]>;
+}
+```
+
+#### Implementations
+
+**GoogleSheetsProvider**
+```typescript
+class GoogleSheetsProvider implements QuestDataProvider {
+  constructor(dataSourceUrl: string);
+  async fetchQuestData(): Promise<IRowData[]>;
+}
+```
+
+**MockCSVProvider**
+```typescript
+class MockCSVProvider implements QuestDataProvider {
+  constructor(dataSourceUrl: string);
+  async fetchQuestData(): Promise<IRowData[]>;
+}
+```
+
 ### IQuestDataService Interface
 
 ```typescript
@@ -250,9 +299,34 @@ Returns the current service configuration.
 
 ## Future Enhancements
 
-The service layer is designed to support future improvements:
+The service layer is designed with the Provider Pattern, making it easy to add new data sources:
 
-1. **REST API Support**
+### Adding a New Provider
+
+1. **Create a New Provider Class**
+   ```typescript
+   // src/services/providers/RestAPIProvider.ts
+   import { QuestDataProvider } from "../types";
+   import { IRowData } from "../../consts";
+
+   export class RestAPIProvider implements QuestDataProvider {
+     private apiUrl: string;
+
+     constructor(apiUrl: string) {
+       this.apiUrl = apiUrl;
+     }
+
+     async fetchQuestData(): Promise<IRowData[]> {
+       const response = await fetch(this.apiUrl);
+       if (!response.ok) {
+         throw new Error(`HTTP ${response.status}`);
+       }
+       return await response.json();
+     }
+   }
+   ```
+
+2. **Update DataSourceType Enum**
    ```typescript
    export enum DataSourceType {
      MOCK_CSV = "MOCK_CSV",
@@ -261,22 +335,42 @@ The service layer is designed to support future improvements:
    }
    ```
 
-2. **GraphQL Support**
-   - Add GraphQL client integration
-   - Query specific user data
+3. **Update Factory**
+   ```typescript
+   const createDataProvider = (
+     dataSourceType: DataSourceType,
+     dataSourceUrl: string
+   ): QuestDataProvider => {
+     switch (dataSourceType) {
+       case DataSourceType.GOOGLE_SHEETS:
+         return new GoogleSheetsProvider(dataSourceUrl);
+       case DataSourceType.MOCK_CSV:
+         return new MockCSVProvider(dataSourceUrl);
+       case DataSourceType.REST_API:
+         return new RestAPIProvider(dataSourceUrl);
+       default:
+         throw new Error(`Unsupported data source type`);
+     }
+   };
+   ```
 
-3. **WebSocket Support**
+### Future Provider Ideas
+
+1. **GraphQLProvider**
+   - Query specific user data
+   - Subscribe to real-time updates
+
+2. **WebSocketProvider**
    - Real-time updates instead of polling
    - Reduce server load
 
-4. **Caching Strategy**
-   - Local storage persistence
-   - Stale-while-revalidate pattern
+3. **LocalStorageProvider**
+   - Offline-first approach
+   - Cache data locally
 
-5. **Error Recovery**
-   - Retry logic
-   - Exponential backoff
-   - Fallback data sources
+4. **IndexedDBProvider**
+   - Large dataset support
+   - Advanced caching strategies
 
 ## Migration Guide
 
@@ -396,13 +490,25 @@ describe('QuestDataService', () => {
 
 ## Summary
 
-The Quest Data Service layer provides:
+The Quest Data Service layer with Provider Pattern provides:
 
 ✅ **Clean abstraction** - Components don't handle data fetching  
+✅ **Provider Pattern** - Easy to add new data sources  
 ✅ **Environment flexibility** - DEV/PROD switching is automatic  
 ✅ **Type safety** - Full TypeScript support  
 ✅ **Maintainability** - Single source of truth for data logic  
-✅ **Extensibility** - Ready for future data sources  
-✅ **Consistency** - Uniform data handling across the app
+✅ **Extensibility** - Ready for future data sources (REST, GraphQL, WebSocket)  
+✅ **Consistency** - Uniform data handling across the app  
+✅ **Testability** - Providers can be easily mocked for testing
 
-Ready for Stage 3: Domain layer / Business logic extraction 🎯
+### Provider Benefits
+
+The Provider Pattern brings several advantages:
+
+1. **Separation of Concerns** - Data fetching logic is isolated in providers
+2. **Open/Closed Principle** - New providers can be added without modifying existing code
+3. **Dependency Inversion** - Service depends on abstraction, not concrete implementations
+4. **Easy Testing** - Mock providers can be created for unit tests
+5. **Flexibility** - Switch data sources at runtime or based on configuration
+
+Ready for integration with any data source! 🎯

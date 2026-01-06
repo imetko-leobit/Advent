@@ -1,6 +1,5 @@
-import Papa from "papaparse";
 import { IRowData } from "../consts";
-import { IQuestDataService, QuestDataServiceConfig } from "./types";
+import { IQuestDataService, QuestDataServiceConfig, QuestDataProvider } from "./types";
 
 /**
  * Default polling interval: 3 minutes (180000ms)
@@ -9,20 +8,22 @@ const DEFAULT_POLLING_INTERVAL_MS = 180000;
 
 /**
  * Quest Data Service - Handles all data fetching, parsing, and polling
- * Abstracts the data source (mock CSV or Google Sheets) from consumers
+ * Uses a QuestDataProvider abstraction to fetch data from various sources
  */
 export class QuestDataService implements IQuestDataService {
   private config: QuestDataServiceConfig;
+  private provider: QuestDataProvider;
   private currentData: IRowData[] = [];
   private pollingIntervalId: number | null = null;
   private onDataUpdateCallback: ((data: IRowData[]) => void) | null = null;
 
-  constructor(config: QuestDataServiceConfig) {
+  constructor(config: QuestDataServiceConfig, provider: QuestDataProvider) {
     this.config = {
       ...config,
       pollingIntervalMs:
         config.pollingIntervalMs || DEFAULT_POLLING_INTERVAL_MS,
     };
+    this.provider = provider;
   }
 
   /**
@@ -40,53 +41,17 @@ export class QuestDataService implements IQuestDataService {
   }
 
   /**
-   * Fetch data from the configured data source
+   * Fetch data from the configured data source via the provider
    */
   async fetchData(): Promise<IRowData[]> {
-    const { dataSourceUrl } = this.config;
-
-    if (!dataSourceUrl) {
-      console.error("[QuestDataService] No data source URL available");
-      return [];
-    }
-
     try {
-      const response = await fetch(dataSourceUrl);
-
-      if (!response.ok) {
-        console.error(
-          `[QuestDataService] Error fetching CSV: HTTP ${response.status}`
-        );
-        return [];
-      }
-
-      const csvData = await response.text();
-      return await this.parseCSV(csvData);
+      return await this.provider.fetchQuestData();
     } catch (error: unknown) {
       if (error instanceof Error) {
-        console.error("[QuestDataService] Error fetching CSV:", error.message);
+        console.error("[QuestDataService] Error fetching data:", error.message);
       }
       return [];
     }
-  }
-
-  /**
-   * Parse CSV data into structured objects
-   */
-  private parseCSV(csvData: string): Promise<IRowData[]> {
-    return new Promise((resolve, reject) => {
-      Papa.parse(csvData, {
-        header: true,
-        dynamicTyping: true,
-        complete: (result) => {
-          resolve(result.data as IRowData[]);
-        },
-        error: (error: Error) => {
-          console.error("[QuestDataService] Error parsing CSV:", error.message);
-          reject(error);
-        },
-      });
-    });
   }
 
   /**

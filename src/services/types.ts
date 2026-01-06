@@ -9,6 +9,18 @@ export enum DataSourceType {
 }
 
 /**
+ * Quest Data Provider Interface
+ * Abstraction for fetching quest data from various sources
+ */
+export interface QuestDataProvider {
+  /**
+   * Fetch quest data from the data source
+   * @returns Promise resolving to array of quest data rows
+   */
+  fetchQuestData(): Promise<IRowData[]>;
+}
+
+/**
  * Configuration for the quest data service
  */
 export interface QuestDataServiceConfig {

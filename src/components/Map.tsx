@@ -13,6 +13,7 @@ import { PointersModal } from "./PointersModal/PointersModal";
 import { Step } from "./Step/Step";
 import { StackedPointers } from "./StackedPointers/StackedPointers";
 import { finishScreenService } from "../domain";
+import { MapRenderer, MapPosition } from "./MapRenderer";
 
 interface IProps {
   tableData?: IMapTaskPosition[];
@@ -64,118 +65,121 @@ export const SVGMap: FC<IProps> = ({ tableData, setIsGameButtonVisible }) => {
     setFirstFinishScreenShow(false);
   };
 
+  // Convert tableData to MapPosition format
+  const positions: MapPosition[] = tableData
+    ? tableData.map((group) => ({
+        id: `${group.taskNumber}`,
+        cxPointers: group.cxPointers,
+        cyPointers: group.cyPointers,
+        cxStep: group.cxStep,
+        cyStep: group.cyStep,
+      }))
+    : [];
+
   return (
     <>
+      {/* Intersection observer target for game button visibility */}
+      {/* Note: Kept separate from MapRenderer to maintain existing behavior */}
+      {/* This allows the game button to hide/show based on map visibility */}
       <div
+        id="quest-map"
+        ref={myRef}
         style={{
-          position: "relative",
+          position: "absolute",
+          width: "100%",
+          height: "70%",
+          top: "19%",
         }}
-      >
-        {finishScreenType && firstFinisScreenShow && (
-          <FinishScreen
-            screenType={finishScreenType}
-            handleCloseClick={handleCloseClick}
-          />
-        )}
-        <div
-          id="quest-map"
-          ref={myRef}
-          style={{
-            position: "absolute",
-            width: "100%",
-            height: "70%",
-            top: "19%",
-          }}
-        />
-        {loading && (
-          <div
+      />
+      <MapRenderer
+        mapImage={uiConfig.map.mapSvg}
+        mapAltText="Quest map showing wellness journey progress"
+        positions={positions}
+        loading={loading}
+        loadingIndicator={
+          <ProgressSpinner
             style={{
               position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              background: "rgba(255, 255, 255, 0.9)",
-              zIndex: 30,
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
             }}
-          >
-            <ProgressSpinner
-              style={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-              }}
-              strokeWidth="4"
-            />
-          </div>
-        )}
-        <div>
-          <img
-            src={uiConfig.map.mapSvg}
-            style={{
-              height: "100%",
-              width: "100%",
-              filter: loading ? "blur(10px)" : "none",
-            }}
-            alt="Map"
+            strokeWidth="4"
           />
-          <Stars />
-          <Clouds />
-          <Girl />
-        </div>
-        {tableData &&
-          tableData.map((group, groupIndex) => {
-            const parentDivWidth = stackedPointersRef.current?.offsetWidth ?? 0;
-            const parentDivHeight =
-              stackedPointersRef.current?.offsetHeight ?? 0;
+        }
+        overlayContent={
+          finishScreenType && firstFinisScreenShow ? (
+            <FinishScreen
+              screenType={finishScreenType}
+              handleCloseClick={handleCloseClick}
+            />
+          ) : undefined
+        }
+        renderAtPointers={({ index }) => {
+          if (!tableData) return null;
+          const group = tableData[index];
+          const parentDivWidth = stackedPointersRef.current?.offsetWidth ?? 0;
+          const parentDivHeight = stackedPointersRef.current?.offsetHeight ?? 0;
 
-            return (
-              <motion.div
-                onHoverStart={() => {
-                  setIsHover(true);
-                  setHoverIndex(groupIndex);
-                }}
-                onHoverEnd={() => {
-                  setIsHover(false);
-                  setHoverIndex(0);
-                }}
-                key={`${group.taskNumber}_${groupIndex}`}
-              >
-                {hoverIndex === groupIndex &&
-                  isModalVisible &&
-                  group.users.length > 5 && (
-                    <PointersModal
-                      users={group.users}
-                      setIsModalVisible={setIsModalVisible}
-                    />
-                  )}
+          return (
+            <motion.div
+              onHoverStart={() => {
+                setIsHover(true);
+                setHoverIndex(index);
+              }}
+              onHoverEnd={() => {
+                setIsHover(false);
+                setHoverIndex(0);
+              }}
+              key={`pointers_${group.taskNumber}_${index}`}
+            >
+              {hoverIndex === index &&
+                isModalVisible &&
+                group.users.length > 5 && (
+                  <PointersModal
+                    users={group.users}
+                    setIsModalVisible={setIsModalVisible}
+                  />
+                )}
 
-                <StackedPointers
-                  stackedPointersRef={stackedPointersRef}
-                  group={group}
-                  groupIndex={groupIndex}
-                  hoverIndex={hoverIndex}
-                  isHover={isHover}
-                  parentDivHeight={parentDivHeight}
-                  parentDivWidth={parentDivWidth}
-                  setFinishScreenType={setFinishScreenType}
-                  finishCoordinates={userPointerFinishAnimationCoordintes}
-                  setLoggedUserTaskNumber={setLoggedUserTaskNumber}
-                />
-                <div
-                  onClick={() => {
-                    if (group.users.length > 5) {
-                      handleOpenModal();
-                    }
-                  }}
-                >
-                  <Step group={group} groupIndex={groupIndex} />
-                </div>
-              </motion.div>
-            );
-          })}
-      </div>
+              <StackedPointers
+                stackedPointersRef={stackedPointersRef}
+                group={group}
+                groupIndex={index}
+                hoverIndex={hoverIndex}
+                isHover={isHover}
+                parentDivHeight={parentDivHeight}
+                parentDivWidth={parentDivWidth}
+                setFinishScreenType={setFinishScreenType}
+                finishCoordinates={userPointerFinishAnimationCoordintes}
+                setLoggedUserTaskNumber={setLoggedUserTaskNumber}
+              />
+            </motion.div>
+          );
+        }}
+        renderAtSteps={({ index }) => {
+          if (!tableData) return null;
+          const group = tableData[index];
+
+          return (
+            <div
+              onClick={() => {
+                if (group.users.length > 5) {
+                  handleOpenModal();
+                }
+              }}
+              key={`step_${group.taskNumber}_${index}`}
+            >
+              <Step group={group} groupIndex={index} />
+            </div>
+          );
+        }}
+      >
+        {/* Map decorations/animations */}
+        <Stars />
+        <Clouds />
+        <Girl />
+      </MapRenderer>
     </>
   );
 };

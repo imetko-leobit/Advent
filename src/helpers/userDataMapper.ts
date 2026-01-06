@@ -1,27 +1,32 @@
 import { IdTokenClaims } from "oidc-client-ts";
 import { IRowData, IUserDataWithPostition } from "../consts";
-import { taskEvaluationService, userProgressService } from "../domain";
+import { questEngine } from "../domain";
+import { uiConfig } from "../config";
 
 /**
  * Legacy mapper for backward compatibility
  * Maps raw row data to user position data
- * @deprecated Use taskEvaluationService.evaluateAllUsersProgress instead
+ * @deprecated Use questEngine.evaluateAllUsersProgress instead
  */
 export const positionMapper = (
   jsonData: IRowData[]
 ): IUserDataWithPostition[] => {
-  return taskEvaluationService.evaluateAllUsersProgress(jsonData);
+  return questEngine.evaluateAllUsersProgress(jsonData);
 };
 
 /**
  * Maps users with position data to map task positions
- * Now uses domain services for business logic
+ * Now uses QuestEngine for all business logic
  */
 export const usersDataMapper = (jsonData: IRowData[], user: IdTokenClaims) => {
-  const dataWithCurrentPosition = taskEvaluationService.evaluateAllUsersProgress(jsonData);
-  const usersMappedData = userProgressService.mapUsersToPositions(
-    dataWithCurrentPosition,
-    user.sub
+  // Evaluate all users' progress using QuestEngine
+  const usersProgress = questEngine.evaluateAllUsersProgress(jsonData);
+  
+  // Group users by their positions on the map
+  const usersMappedData = questEngine.groupUsersByPosition(
+    usersProgress,
+    user.sub,
+    uiConfig.taskPositions
   );
 
   return usersMappedData;

@@ -6,7 +6,10 @@
 // Interfaces
 export * from "./interfaces";
 
-// Services
+// Quest Engine (Primary interface for quest business logic)
+export * from "./quest";
+
+// Legacy Services (kept for backward compatibility, prefer using QuestEngine)
 export { taskEvaluationService, TaskEvaluationService } from "./TaskEvaluationService";
 export { avatarService, AvatarService } from "./AvatarService";
 export { finishScreenService, FinishScreenService } from "./FinishScreenService";

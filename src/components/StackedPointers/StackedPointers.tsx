@@ -3,7 +3,7 @@ import { UserPointer } from "./UserPointer";
 import { motion } from "framer-motion";
 import { IMapTaskPosition, IUserInGroupData } from "../../consts";
 import { useAuthContext } from "../../auth/AuthContext";
-import { finishScreenService, userProgressService } from "../../domain";
+import { questEngine } from "../../domain";
 
 interface IProps {
   stackedPointersRef: RefObject<HTMLDivElement>;
@@ -40,9 +40,10 @@ export const StackedPointers: FC<IProps> = ({
     const loggedUserId = user?.profile.sub;
     if (!loggedUserId) return;
 
-    const shouldSeparate = finishScreenService.isSpecialTask(group.taskNumber);
+    // Use QuestEngine to determine if users should be separated
+    const shouldSeparate = questEngine.isSpecialTask(group.taskNumber);
     const { regularUsers, loggedUser: foundLoggedUser } = 
-      userProgressService.filterUsersAtPosition(
+      questEngine.filterUsersAtPosition(
         group.users,
         loggedUserId,
         shouldSeparate

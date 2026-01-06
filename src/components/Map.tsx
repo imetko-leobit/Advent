@@ -78,6 +78,9 @@ export const SVGMap: FC<IProps> = ({ tableData, setIsGameButtonVisible }) => {
 
   return (
     <>
+      {/* Intersection observer target for game button visibility */}
+      {/* Note: Kept separate from MapRenderer to maintain existing behavior */}
+      {/* This allows the game button to hide/show based on map visibility */}
       <div
         id="quest-map"
         ref={myRef}

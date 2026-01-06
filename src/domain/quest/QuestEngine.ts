@@ -189,6 +189,14 @@ export class QuestEngine {
       const imageUrl = avatarService.generateAvatarUrl(userData.id);
       const { taskNumber, id, email, name, socialNetworkPoint } = userData;
 
+      // Guard against invalid task numbers
+      if (taskNumber < 0 || taskNumber >= positions.length) {
+        console.warn(
+          `[QuestEngine] User ${id} has invalid task number ${taskNumber}. Valid range: 0-${positions.length - 1}`
+        );
+        return; // Skip this user
+      }
+
       positions[taskNumber].users.push({
         email,
         id,

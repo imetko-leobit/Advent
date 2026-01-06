@@ -38,8 +38,9 @@ const getDataSourceUrl = (): string => {
 
 /**
  * Determines the data source type based on environment
+ * Exported for logging purposes
  */
-const getDataSourceType = (): DataSourceType => {
+export const getDataSourceType = (): DataSourceType => {
   // In DEV mode, always use mock CSV
   if (isDevMode()) {
     return DataSourceType.MOCK_CSV;

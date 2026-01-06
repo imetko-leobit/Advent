@@ -208,6 +208,11 @@ export const questConfig: QuestConfig = {
  * @returns True if the task is a finish task
  */
 export const isFinishTask = (taskId: number): boolean => {
+  // Guard against invalid task IDs
+  if (taskId < 0 || taskId >= questConfig.taskCount) {
+    console.warn(`[QuestConfig] isFinishTask called with invalid task ID: ${taskId}`);
+    return false;
+  }
   return questConfig.finalTaskIds.includes(taskId);
 };
 
@@ -217,6 +222,11 @@ export const isFinishTask = (taskId: number): boolean => {
  * @returns Task configuration or undefined if not found
  */
 export const getTaskById = (taskId: number): TaskConfig | undefined => {
+  // Guard against invalid task IDs
+  if (taskId < 0 || taskId >= questConfig.taskCount) {
+    console.warn(`[QuestConfig] getTaskById called with invalid task ID: ${taskId}`);
+    return undefined;
+  }
   return questConfig.tasks.find(task => task.id === taskId);
 };
 
@@ -226,5 +236,9 @@ export const getTaskById = (taskId: number): TaskConfig | undefined => {
  * @returns Array of tasks matching the type
  */
 export const getTasksByType = (type: TaskType): TaskConfig[] => {
+  if (!type) {
+    console.warn(`[QuestConfig] getTasksByType called with invalid type: ${type}`);
+    return [];
+  }
   return questConfig.tasks.filter(task => task.type === type);
 };

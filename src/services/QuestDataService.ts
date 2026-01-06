@@ -1,5 +1,6 @@
 import { IRowData } from "../consts";
 import { IQuestDataService, QuestDataServiceConfig, QuestDataProvider } from "./types";
+import { logger } from "../utils/logger";
 
 /**
  * Default polling interval: 3 minutes (180000ms)
@@ -24,6 +25,11 @@ export class QuestDataService implements IQuestDataService {
         config.pollingIntervalMs || DEFAULT_POLLING_INTERVAL_MS,
     };
     this.provider = provider;
+    
+    logger.info(
+      "QuestDataService",
+      `Initialized with ${config.dataSourceType} provider`
+    );
   }
 
   /**
@@ -45,10 +51,16 @@ export class QuestDataService implements IQuestDataService {
    */
   async fetchData(): Promise<IRowData[]> {
     try {
-      return await this.provider.fetchQuestData();
+      const data = await this.provider.fetchQuestData();
+      
+      if (!data || data.length === 0) {
+        logger.warn("QuestDataService", "Provider returned empty dataset");
+      }
+      
+      return data;
     } catch (error: unknown) {
       if (error instanceof Error) {
-        console.error("[QuestDataService] Error fetching data:", error.message);
+        logger.error("QuestDataService", "Error fetching data", error);
       }
       return [];
     }
@@ -60,30 +72,43 @@ export class QuestDataService implements IQuestDataService {
   startPolling(callback: (data: IRowData[]) => void): void {
     this.onDataUpdateCallback = callback;
 
+    logger.info("QuestDataService", "Starting data polling");
+
     // Fetch initial data
     this.fetchData()
       .then((data) => {
         this.currentData = data;
+        logger.info("QuestDataService", `Initial fetch complete: ${data.length} records`);
         this.onDataUpdateCallback?.(data);
       })
       .catch((error) => {
-        console.error("[QuestDataService] Error during initial fetch:", error);
+        logger.error("QuestDataService", "Error during initial fetch", error);
         // Still call callback with empty array to signal completion
         this.onDataUpdateCallback?.([]);
       });
 
     // Set up polling interval
-    this.pollingIntervalId = window.setInterval(() => {
-      this.fetchData()
-        .then((data) => {
-          this.currentData = data;
-          this.onDataUpdateCallback?.(data);
-        })
-        .catch((error) => {
-          console.error("[QuestDataService] Error during polling fetch:", error);
-          // Continue with cached data on error
-        });
-    }, this.config.pollingIntervalMs);
+    if (this.config.pollingIntervalMs && this.config.pollingIntervalMs < Number.MAX_SAFE_INTEGER) {
+      this.pollingIntervalId = window.setInterval(() => {
+        this.fetchData()
+          .then((data) => {
+            this.currentData = data;
+            logger.debug("QuestDataService", `Poll complete: ${data.length} records`);
+            this.onDataUpdateCallback?.(data);
+          })
+          .catch((error) => {
+            logger.error("QuestDataService", "Error during polling fetch", error);
+            // Continue with cached data on error
+          });
+      }, this.config.pollingIntervalMs);
+      
+      logger.info(
+        "QuestDataService",
+        `Polling enabled: every ${this.config.pollingIntervalMs}ms`
+      );
+    } else {
+      logger.info("QuestDataService", "Polling disabled");
+    }
   }
 
   /**
@@ -93,6 +118,7 @@ export class QuestDataService implements IQuestDataService {
     if (this.pollingIntervalId !== null) {
       clearInterval(this.pollingIntervalId);
       this.pollingIntervalId = null;
+      logger.info("QuestDataService", "Polling stopped");
     }
     this.onDataUpdateCallback = null;
   }

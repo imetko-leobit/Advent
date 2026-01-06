@@ -2,6 +2,7 @@ import { QuestDataService } from "./QuestDataService";
 import { GoogleSheetsProvider, MockCSVProvider } from "./providers";
 import { DataSourceType, QuestDataServiceConfig, QuestDataProvider } from "./types";
 import { isDevMode } from "../auth/authConfig";
+import { logger } from "../utils/logger";
 
 /**
  * Polling disabled constant - used to effectively disable polling in DEV mode
@@ -18,9 +19,7 @@ const POLLING_DISABLED = Number.MAX_SAFE_INTEGER;
 const getDataSourceUrl = (): string => {
   // In DEV mode, always use mock data
   if (isDevMode()) {
-    console.log(
-      "[QuestDataService] DEV mode - using mock CSV data"
-    );
+    logger.info("QuestDataServiceFactory", "DEV mode - using mock CSV data");
     return "/mock-quest-data.csv";
   }
 
@@ -32,7 +31,7 @@ const getDataSourceUrl = (): string => {
 
   // Production error - environment variable is required
   throw new Error(
-    "[QuestDataService] VITE_GOOGLE_SHEET_URL must be configured in production"
+    "VITE_GOOGLE_SHEET_URL must be configured in production mode"
   );
 };
 
@@ -93,7 +92,7 @@ export const createQuestDataService = (
   const provider = createDataProvider(config.dataSourceType, config.dataSourceUrl);
 
   if (isDevMode()) {
-    console.log("[QuestDataService] DEV mode - polling disabled");
+    logger.info("QuestDataServiceFactory", "DEV mode - polling disabled");
   }
 
   return new QuestDataService(config, provider);

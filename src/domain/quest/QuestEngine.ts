@@ -26,6 +26,7 @@ import {
   GroupedUsers,
 } from "./types";
 import { finishScreenTypes } from "../../consts";
+import { logger } from "../../utils/logger";
 
 export class QuestEngine {
   /**
@@ -191,8 +192,9 @@ export class QuestEngine {
 
       // Guard against invalid task numbers
       if (taskNumber < 0 || taskNumber >= positions.length) {
-        console.warn(
-          `[QuestEngine] User ${id} has invalid task number ${taskNumber}. Valid range: 0-${positions.length - 1}`
+        logger.warn(
+          "QuestEngine",
+          `User ${id} has invalid task number ${taskNumber}. Valid range: 0-${positions.length - 1}`
         );
         return; // Skip this user
       }

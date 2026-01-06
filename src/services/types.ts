@@ -6,6 +6,7 @@ import { IRowData } from "../consts";
 export enum DataSourceType {
   MOCK_CSV = "MOCK_CSV",
   GOOGLE_SHEETS = "GOOGLE_SHEETS",
+  API = "API",
 }
 
 /**

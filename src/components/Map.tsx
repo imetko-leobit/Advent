@@ -12,7 +12,7 @@ import { Girl } from "./Animation/Girl/Girl";
 import { PointersModal } from "./PointersModal/PointersModal";
 import { Step } from "./Step/Step";
 import { StackedPointers } from "./StackedPointers/StackedPointers";
-import { finishScreenService } from "../domain";
+import { questEngine } from "../domain";
 import { MapRenderer, MapPosition } from "./MapRenderer";
 
 interface IProps {
@@ -52,7 +52,8 @@ export const SVGMap: FC<IProps> = ({ tableData, setIsGameButtonVisible }) => {
   }, [setIsGameButtonVisible]);
 
   const handleCloseClick = () => {
-    const coordinates = finishScreenService.getFinishAnimationCoordinates(
+    // Use QuestEngine to get finish animation coordinates
+    const coordinates = questEngine.getFinishAnimationCoordinates(
       finishScreenType,
       loggedUserTaskNumber
     );
@@ -135,7 +136,7 @@ export const SVGMap: FC<IProps> = ({ tableData, setIsGameButtonVisible }) => {
             >
               {hoverIndex === index &&
                 isModalVisible &&
-                group.users.length > 5 && (
+                group.users.length > uiConfig.pointers.maxBeforeModal && (
                   <PointersModal
                     users={group.users}
                     setIsModalVisible={setIsModalVisible}
@@ -164,7 +165,7 @@ export const SVGMap: FC<IProps> = ({ tableData, setIsGameButtonVisible }) => {
           return (
             <div
               onClick={() => {
-                if (group.users.length > 5) {
+                if (group.users.length > uiConfig.pointers.maxBeforeModal) {
                   handleOpenModal();
                 }
               }}

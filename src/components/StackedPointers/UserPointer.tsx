@@ -6,7 +6,7 @@ import { uiConfig, questConfig } from "../../config";
 import { UserTooltip } from "../UserTooltip/UserTooltip";
 import { useLoading } from "../../context/LoadingContext";
 import { calcPointerHoverPosition } from "../../helpers/calculateHoverPostion";
-import { finishScreenService } from "../../domain";
+import { questEngine } from "../../domain";
 
 interface IProps {
   currentUserId?: string;
@@ -42,18 +42,25 @@ export const UserPointer: FC<IProps> = ({
 
   const loggedUser = currentUserId === id;
 
+  // Use QuestEngine to determine if user should move to finish
   const moveLoggedUserToFinish =
     loggedUser &&
     finishCoordinates &&
-    finishScreenService.isSpecialTask(taskNumber);
+    questEngine.isSpecialTask(taskNumber);
 
   const handleFinishScreenType = useCallback(() => {
-    if (!loggedUser) return;
+    if (!loggedUser || !id) return;
 
-    const finishConfig = finishScreenService.getFinishScreenConfig(
+    // Use QuestEngine to get finish screen configuration
+    const userProgress = {
       taskNumber,
-      loggedUser
-    );
+      id,
+      email: user.email,
+      name,
+      socialNetworkPoint,
+    };
+    
+    const finishConfig = questEngine.getFinishState(userProgress, loggedUser);
 
     if (finishConfig.shouldShow) {
       setFinishScreenType(finishConfig.type);
@@ -69,7 +76,7 @@ export const UserPointer: FC<IProps> = ({
     stopLoading();
   }, [handleFinishScreenType, loggedUser, stopLoading, taskNumber]);
 
-  const showNameTooltip = isTooltipVisible && name && index < 5;
+  const showNameTooltip = isTooltipVisible && name && index < uiConfig.pointers.maxVisibleInTooltip;
 
   return (
     <motion.div
@@ -103,7 +110,7 @@ export const UserPointer: FC<IProps> = ({
             borderRadius: "100%",
             height: parentDivHeight ? parentDivHeight / 1.6 : "",
             zIndex:
-              loggedUser && finishScreenService.isSpecialTask(taskNumber)
+              loggedUser && questEngine.isSpecialTask(taskNumber)
                 ? index + 101
                 : index + 1,
           }}
@@ -124,7 +131,7 @@ export const UserPointer: FC<IProps> = ({
             height: parentDivHeight * 1.6,
             width: parentDivWidth * 1.6,
             zIndex:
-              loggedUser && finishScreenService.isSpecialTask(taskNumber)
+              loggedUser && questEngine.isSpecialTask(taskNumber)
                 ? index + 100
                 : index,
           }}

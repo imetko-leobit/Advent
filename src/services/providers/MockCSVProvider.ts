@@ -1,6 +1,6 @@
-import Papa from "papaparse";
 import { IRowData } from "../../consts";
 import { QuestDataProvider } from "../types";
+import { parseCSV } from "./csvParser";
 
 /**
  * Mock CSV Data Provider
@@ -34,31 +34,12 @@ export class MockCSVProvider implements QuestDataProvider {
       }
 
       const csvData = await response.text();
-      return await this.parseCSV(csvData);
+      return await parseCSV(csvData);
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.error("[MockCSVProvider] Error fetching CSV:", error.message);
       }
       return [];
     }
-  }
-
-  /**
-   * Parse CSV data into structured objects
-   */
-  private parseCSV(csvData: string): Promise<IRowData[]> {
-    return new Promise((resolve, reject) => {
-      Papa.parse(csvData, {
-        header: true,
-        dynamicTyping: true,
-        complete: (result) => {
-          resolve(result.data as IRowData[]);
-        },
-        error: (error: Error) => {
-          console.error("[MockCSVProvider] Error parsing CSV:", error.message);
-          reject(error);
-        },
-      });
-    });
   }
 }

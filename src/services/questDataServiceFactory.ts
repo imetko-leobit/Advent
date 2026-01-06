@@ -83,7 +83,8 @@ export const createQuestDataService = (
     dataSourceType: getDataSourceType(),
     dataSourceUrl: getDataSourceUrl(),
     // Disable polling in DEV mode - mock data doesn't change during development
-    // In production, use default (or custom) polling interval for live data updates
+    // Setting to POLLING_DISABLED (Number.MAX_SAFE_INTEGER) prevents any polling
+    // In production, undefined will use the default interval (3 minutes)
     pollingIntervalMs: isDevMode() ? POLLING_DISABLED : undefined,
     ...customConfig,
   };

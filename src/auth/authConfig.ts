@@ -107,7 +107,7 @@ export function getAuthConfig(): AuthConfig {
     validateOidcConfig(authority, redirectUri);
   }
   
-  // Log auth mode for debugging (only in development builds)
+  // Log auth mode for debugging (when DEV mode is enabled)
   if (isDevMode()) {
     console.log(`[Auth] Mode: ${mode.toUpperCase()}`);
     if (mode === 'dev') {

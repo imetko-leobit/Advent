@@ -88,7 +88,13 @@ export class QuestDataService implements IQuestDataService {
       });
 
     // Set up polling interval
-    if (this.config.pollingIntervalMs && this.config.pollingIntervalMs < Number.MAX_SAFE_INTEGER) {
+    // Check if polling should be enabled (interval is defined and not set to disable value)
+    // When pollingIntervalMs is Number.MAX_SAFE_INTEGER, polling is effectively disabled
+    const isPollingEnabled = 
+      this.config.pollingIntervalMs && 
+      this.config.pollingIntervalMs < Number.MAX_SAFE_INTEGER;
+
+    if (isPollingEnabled) {
       this.pollingIntervalId = window.setInterval(() => {
         this.fetchData()
           .then((data) => {

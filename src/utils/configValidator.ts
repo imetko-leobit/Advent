@@ -182,6 +182,8 @@ export function assertValidConfig(config: QuestConfig = questConfig): void {
   const result = validateQuestConfig(config);
 
   if (result.warnings.length > 0) {
+    // Use console.warn for startup warnings to ensure visibility
+    // before the logger is fully initialized
     console.warn("[ConfigValidator] Configuration warnings:");
     result.warnings.forEach((warning) => {
       console.warn(`  - ${warning.field}: ${warning.message}`);
@@ -189,6 +191,8 @@ export function assertValidConfig(config: QuestConfig = questConfig): void {
   }
 
   if (!result.isValid) {
+    // Use console.error for startup errors to ensure visibility
+    // before the logger is fully initialized
     console.error("[ConfigValidator] Configuration validation failed:");
     result.errors.forEach((error) => {
       console.error(`  - ${error.field}: ${error.message}`);

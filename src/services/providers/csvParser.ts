@@ -3,6 +3,11 @@ import { IRowData } from "../../consts";
 import { logger } from "../../utils/logger";
 
 /**
+ * Required field for valid quest data row
+ */
+const REQUIRED_EMAIL_FIELD = "Email Address";
+
+/**
  * Validates a single row of data
  * Returns true if the row has at least an email field
  */
@@ -16,9 +21,9 @@ function isValidRow(row: unknown): row is IRowData {
   // A valid row must have an email address field
   // Other fields can be optional/null
   return (
-    "Email Address" in rowData &&
-    typeof rowData["Email Address"] === "string" &&
-    rowData["Email Address"].length > 0
+    REQUIRED_EMAIL_FIELD in rowData &&
+    typeof rowData[REQUIRED_EMAIL_FIELD] === "string" &&
+    rowData[REQUIRED_EMAIL_FIELD].length > 0
   );
 }
 

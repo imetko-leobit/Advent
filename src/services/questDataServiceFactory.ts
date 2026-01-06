@@ -1,6 +1,6 @@
 import { QuestDataService } from "./QuestDataService";
-import { GoogleSheetsProvider, MockCSVProvider } from "./providers";
-import { DataSourceType, QuestDataServiceConfig, QuestDataProvider } from "./types";
+import { GoogleSheetsProvider, MockCSVProvider, APIProvider } from "./providers";
+import { DataSourceType, QuestDataServiceConfig, QuestDataProvider, CustomProviderConfig } from "./types";
 import { isDevMode } from "../auth/authConfig";
 import { logger } from "../utils/logger";
 
@@ -59,13 +59,16 @@ export const getDataSourceType = (): DataSourceType => {
  */
 const createDataProvider = (
   dataSourceType: DataSourceType,
-  dataSourceUrl: string
+  dataSourceUrl: string,
+  options?: { headers?: Record<string, string> }
 ): QuestDataProvider => {
   switch (dataSourceType) {
     case DataSourceType.GOOGLE_SHEETS:
       return new GoogleSheetsProvider(dataSourceUrl);
     case DataSourceType.MOCK_CSV:
       return new MockCSVProvider(dataSourceUrl);
+    case DataSourceType.API:
+      return new APIProvider(dataSourceUrl, options);
     default:
       throw new Error(`Unsupported data source type: ${dataSourceType}`);
   }
@@ -96,4 +99,32 @@ export const createQuestDataService = (
   }
 
   return new QuestDataService(config, provider);
+};
+
+/**
+ * Create a quest data service with a custom provider
+ * Allows runtime switching between different data sources
+ * 
+ * @param provider - Custom QuestDataProvider instance
+ * @param config - Optional configuration (only pollingIntervalMs is used)
+ */
+export const createQuestDataServiceWithProvider = (
+  provider: QuestDataProvider,
+  config: CustomProviderConfig = {}
+): QuestDataService => {
+  // Create a minimal config for the service
+  // dataSourceType and dataSourceUrl are not used with custom providers
+  const fullConfig: QuestDataServiceConfig = {
+    dataSourceType: DataSourceType.MOCK_CSV, // Not used with custom provider
+    dataSourceUrl: "", // Not used with custom provider
+    pollingIntervalMs: isDevMode() ? POLLING_DISABLED : undefined,
+    ...config,
+  };
+
+  logger.info(
+    "QuestDataServiceFactory",
+    "Creating service with custom provider"
+  );
+
+  return new QuestDataService(fullConfig, provider);
 };

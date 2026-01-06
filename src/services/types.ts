@@ -6,6 +6,7 @@ import { IRowData } from "../consts";
 export enum DataSourceType {
   MOCK_CSV = "MOCK_CSV",
   GOOGLE_SHEETS = "GOOGLE_SHEETS",
+  API = "API",
 }
 
 /**
@@ -26,6 +27,14 @@ export interface QuestDataProvider {
 export interface QuestDataServiceConfig {
   dataSourceType: DataSourceType;
   dataSourceUrl: string;
+  pollingIntervalMs?: number;
+}
+
+/**
+ * Minimal configuration for custom provider scenarios
+ * Used when provider is already instantiated
+ */
+export interface CustomProviderConfig {
   pollingIntervalMs?: number;
 }
 

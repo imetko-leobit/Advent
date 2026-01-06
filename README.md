@@ -9,6 +9,7 @@ A gamified wellness tracking application that helps teams visualize and celebrat
 - [Environment Configuration](#environment-configuration)
 - [Authentication Modes](#authentication-modes)
 - [Data Layer & Sources](#data-layer--sources)
+- [Dynamic Configuration & Data Switching](#dynamic-configuration--data-switching)
 - [Quest Logic & Progression](#quest-logic--progression)
 - [UI Customization](#ui-customization)
 - [Project Structure](#project-structure)
@@ -348,13 +349,44 @@ VITE_GOOGLE_SHEET_URL=https://docs.google.com/spreadsheets/d/SHEET_ID/export?for
 - Real-time updates via polling
 - No database setup needed
 
-#### 3. Future: Custom API
+#### 3. API Provider (New!)
+
+**Configuration:**
+```bash
+# Use via runtime switching or custom provider
+# See Dynamic Configuration section below
+```
+
+**When used:**
+- Via runtime data source switching
+- When custom API endpoint is needed
+- For advanced integration scenarios
+
+**Advantages:**
+- Full control over data format and authentication
+- Real-time updates via API polling
+- Can integrate with existing backend systems
+- Supports custom headers for authentication
+
+**Expected API Response:**
+```json
+[
+  {
+    "email": "user@example.com",
+    "name": "User Name",
+    "picture": "https://example.com/avatar.jpg",
+    "taskNumber": 5
+  }
+]
+```
+
+#### 4. Future Extensions
 
 The service layer is designed to support additional data sources:
-- REST APIs
 - GraphQL endpoints
 - WebSocket for real-time updates
 - Local storage / IndexedDB
+- Custom database connections
 
 ### Data Polling Behavior
 
@@ -410,6 +442,126 @@ To add a new data source (e.g., REST API):
 2. Add new configuration in `QuestDataService.ts`
 3. Implement fetch logic in `fetchData()` method
 4. Update factory in `questDataServiceFactory.ts`
+
+---
+
+## Dynamic Configuration & Data Switching
+
+The application now supports **dynamic configuration loading** and **runtime data source switching**, enabling you to:
+
+- Load different quest configurations without code changes
+- Switch map images and UI assets on the fly
+- Change data sources at runtime (Mock CSV ↔ Google Sheets ↔ API)
+- Test different configurations without rebuilding
+
+### Dynamic Quest Configuration
+
+Load custom quest configurations from JSON files or JavaScript objects:
+
+**Example: Loading from JSON**
+```typescript
+import { useConfig } from './context/ConfigContext';
+
+const { loadQuestConfigFromJSON } = useConfig();
+
+// Load a custom quest configuration
+await loadQuestConfigFromJSON('/custom-quest-config.json');
+```
+
+**Example: Loading from Object**
+```typescript
+const customConfig = {
+  name: "Summer Wellness Challenge",
+  taskCount: 12,
+  // ... partial configuration
+};
+
+loadQuestConfigFromObject(customConfig);
+```
+
+**Configuration Format:**
+```json
+{
+  "name": "My Custom Quest",
+  "taskCount": 10,
+  "tasks": [
+    { "id": 0, "label": "Start", "type": "core" },
+    { "id": 1, "label": "First Task", "type": "core" }
+  ],
+  "finalTaskIds": [8, 9],
+  "firstFinishTaskId": 8,
+  "finalFinishTaskId": 9
+}
+```
+
+Only specify fields you want to override - missing fields use defaults.
+
+### Runtime Data Source Switching
+
+Switch between different data sources without restarting the app:
+
+```typescript
+import { useDataSource } from './hooks/useDataSource';
+
+const { switchDataSource } = useDataSource();
+
+// Switch to Mock CSV
+await switchDataSource({
+  type: DataSourceType.MOCK_CSV,
+  url: '/mock-quest-data.csv',
+});
+
+// Switch to Google Sheets
+await switchDataSource({
+  type: DataSourceType.GOOGLE_SHEETS,
+  url: 'https://docs.google.com/.../export?format=csv',
+});
+
+// Switch to API
+await switchDataSource({
+  type: DataSourceType.API,
+  url: 'https://api.example.com/quest-data',
+  headers: { 'Authorization': 'Bearer TOKEN' },
+});
+```
+
+### Supported Data Sources
+
+**1. Mock CSV** - Local CSV file for development/testing
+**2. Google Sheets** - Google Sheets CSV export (production)
+**3. API** - REST API endpoint returning JSON
+
+The API provider expects this response format:
+```json
+[
+  {
+    "email": "user@example.com",
+    "name": "User Name",
+    "picture": "https://example.com/avatar.jpg",
+    "taskNumber": 5
+  }
+]
+```
+
+### Configuration Validation & Fallback
+
+All configurations are automatically validated:
+
+- Invalid configurations fall back to defaults
+- Errors are logged with detailed messages
+- Application continues running in DEV mode
+- User-friendly error messages displayed
+
+### Interactive Demo
+
+The application includes a built-in demo component to test these features:
+
+1. Import `ConfigDemo` component in your page
+2. Click "🎮 Show Config Demo" button
+3. Try loading configurations and switching data sources
+4. View real-time state updates and error handling
+
+**See full documentation:** [`/docs/DYNAMIC_CONFIGURATION.md`](/docs/DYNAMIC_CONFIGURATION.md)
 
 ---
 

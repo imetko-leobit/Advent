@@ -23,6 +23,8 @@ export interface MapPosition {
 export interface MapRendererConfig {
   /** Map image/SVG source */
   mapImage: string;
+  /** Alt text for the map image (for accessibility) */
+  mapAltText?: string;
   /** Array of positions for steps/markers */
   positions: MapPosition[];
   /** Optional loading state */
@@ -64,12 +66,11 @@ export interface MapRendererProps extends MapRendererConfig {
   renderAtPointers?: (props: PositionRenderProps) => ReactNode;
   /** Callback to render content at step positions */
   renderAtSteps?: (props: PositionRenderProps) => ReactNode;
-  /** Optional callback when map visibility changes */
-  onVisibilityChange?: (isVisible: boolean) => void;
 }
 
 export const MapRenderer: FC<MapRendererProps> = ({
   mapImage,
+  mapAltText = "Map",
   positions = [],
   loading = false,
   children,
@@ -124,13 +125,15 @@ export const MapRenderer: FC<MapRendererProps> = ({
             width: "100%",
             filter: loading ? "blur(10px)" : "none",
           }}
-          alt="Map"
+          alt={mapAltText}
         />
         {/* Children (e.g., stars, clouds, character animations) */}
         {children}
       </div>
 
       {/* Positioned elements */}
+      {/* Note: Positioning is handled by the rendered components themselves */}
+      {/* They receive position data and apply absolute positioning as needed */}
       {positions.map((position, index) => (
         <motion.div key={position.id}>
           {/* Content at pointer position */}

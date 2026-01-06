@@ -90,6 +90,7 @@ export const SVGMap: FC<IProps> = ({ tableData, setIsGameButtonVisible }) => {
       />
       <MapRenderer
         mapImage={uiConfig.map.mapSvg}
+        mapAltText="Quest map showing wellness journey progress"
         positions={positions}
         loading={loading}
         loadingIndicator={

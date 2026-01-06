@@ -8,6 +8,14 @@ import { logger } from "../../utils/logger";
 const DEFAULT_TIMEOUT_MS = 30000;
 
 /**
+ * API Provider configuration options
+ */
+export interface APIProviderOptions {
+  timeout?: number;
+  headers?: Record<string, string>;
+}
+
+/**
  * API Data Provider
  * Fetches quest data from a REST API endpoint
  * Expects JSON response with array of IRowData objects
@@ -17,16 +25,12 @@ export class APIProvider implements QuestDataProvider {
   private timeout: number;
   private headers: Record<string, string>;
 
-  constructor(
-    apiEndpoint: string,
-    timeout: number = DEFAULT_TIMEOUT_MS,
-    headers: Record<string, string> = {}
-  ) {
+  constructor(apiEndpoint: string, options: APIProviderOptions = {}) {
     this.apiEndpoint = apiEndpoint;
-    this.timeout = timeout;
+    this.timeout = options.timeout ?? DEFAULT_TIMEOUT_MS;
     this.headers = {
       "Content-Type": "application/json",
-      ...headers,
+      ...(options.headers || {}),
     };
   }
 

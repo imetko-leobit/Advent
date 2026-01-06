@@ -44,7 +44,10 @@ export const useDataSource = () => {
       case DataSourceType.GOOGLE_SHEETS:
         return new GoogleSheetsProvider(config.url);
       case DataSourceType.API:
-        return new APIProvider(config.url, undefined, config.headers);
+        return new APIProvider(config.url, {
+          headers: config.headers,
+          timeout: config.pollingIntervalMs,
+        });
       default:
         throw new Error(`Unsupported data source type: ${config.type}`);
     }
@@ -69,8 +72,6 @@ export const useDataSource = () => {
         // Create new provider and service
         const provider = createProvider(config);
         const service = createQuestDataServiceWithProvider(provider, {
-          dataSourceType: config.type,
-          dataSourceUrl: config.url,
           pollingIntervalMs: config.pollingIntervalMs,
         });
 

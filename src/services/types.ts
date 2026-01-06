@@ -31,6 +31,14 @@ export interface QuestDataServiceConfig {
 }
 
 /**
+ * Minimal configuration for custom provider scenarios
+ * Used when provider is already instantiated
+ */
+export interface CustomProviderConfig {
+  pollingIntervalMs?: number;
+}
+
+/**
  * Interface for quest data fetching and management
  */
 export interface IQuestDataService {

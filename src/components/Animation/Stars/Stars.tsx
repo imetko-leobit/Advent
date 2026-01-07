@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { useUIConfig } from "../../../context/UIConfigContext";
+import { UIStarConfig } from "../../../services/uiConfigSchema";
 import { useMemo } from "react";
 
 export const Stars = () => {
@@ -20,7 +21,7 @@ export const Stars = () => {
       }
       groups[duration].push(star);
       return groups;
-    }, {} as Record<number, typeof stars>);
+    }, {} as Record<number, UIStarConfig[]>);
   }, [stars]);
 
   return (

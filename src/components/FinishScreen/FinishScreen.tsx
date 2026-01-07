@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { motion } from "framer-motion";
-import { uiConfig } from "../../config";
+import { useUIConfig } from "../../context/UIConfigContext";
 import "./FinishScreen.css";
 import { finishScreenTypes } from "../../consts";
 
@@ -10,6 +10,12 @@ interface IProps {
 }
 
 export const FinishScreen: FC<IProps> = ({ screenType, handleCloseClick }) => {
+  const { uiConfig } = useUIConfig();
+
+  if (!uiConfig) {
+    return null;
+  }
+
   const finishScreenImage = screenType === finishScreenTypes.finish
     ? uiConfig.finishScreens.finish
     : uiConfig.finishScreens.dzen;

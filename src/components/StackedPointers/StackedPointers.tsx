@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { IMapTaskPosition, IUserInGroupData } from "../../consts";
 import { useAuthContext } from "../../auth/AuthContext";
 import { questEngine } from "../../domain";
-import { uiConfig } from "../../config";
+import { useUIConfig } from "../../context/UIConfigContext";
 
 interface IProps {
   stackedPointersRef: RefObject<HTMLDivElement>;
@@ -32,6 +32,7 @@ export const StackedPointers: FC<IProps> = ({
   finishCoordinates,
 }) => {
   const { user } = useAuthContext();
+  const { uiConfig } = useUIConfig();
   const [usersWithoutLoggedUser, setUsersWithoutLoggedUser] = useState<
     IUserInGroupData[]
   >([]);
@@ -59,6 +60,10 @@ export const StackedPointers: FC<IProps> = ({
       filterUserPointers();
     }
   }, [group.users]);
+
+  if (!uiConfig) {
+    return null;
+  }
 
   const shouldShowHover = 
     hoverIndex === groupIndex && 

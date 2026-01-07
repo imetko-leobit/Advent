@@ -2,7 +2,8 @@ import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 
 import { IUserInGroupData } from "../../consts";
-import { uiConfig, questConfig } from "../../config";
+import { questConfig } from "../../config";
+import { useUIConfig } from "../../context/UIConfigContext";
 import { UserTooltip } from "../UserTooltip/UserTooltip";
 import { useLoading } from "../../context/LoadingContext";
 import { calcPointerHoverPosition } from "../../helpers/calculateHoverPostion";
@@ -34,6 +35,7 @@ export const UserPointer: FC<IProps> = ({
   setLoggedUserTaskNumber,
 }) => {
   const { stopLoading } = useLoading();
+  const { uiConfig } = useUIConfig();
   const pointerRef = useRef<HTMLDivElement>(null);
   const [isTooltipVisible, setIsTooltipVisible] = useState(false);
   const { taskNumber, name, imageUrl, socialNetworkPoint, id } = user;
@@ -76,7 +78,14 @@ export const UserPointer: FC<IProps> = ({
     stopLoading();
   }, [handleFinishScreenType, loggedUser, stopLoading, taskNumber]);
 
+  if (!uiConfig) {
+    return null;
+  }
+
   const showNameTooltip = isTooltipVisible && name && index < uiConfig.pointers.maxVisibleInTooltip;
+
+  // Build the pointer color matrix
+  const pointerColors = uiConfig.pointers.colors.map(color => color.icons);
 
   return (
     <motion.div
@@ -122,8 +131,8 @@ export const UserPointer: FC<IProps> = ({
         )}
         <img
           src={
-            uiConfig.pointers.colored[socialNetworkPoint][
-              index % uiConfig.pointers.colored[0].length
+            pointerColors[socialNetworkPoint][
+              index % pointerColors[0].length
             ]
           }
           style={{

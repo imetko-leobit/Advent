@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { motion } from "framer-motion";
-import { uiConfig } from "../../config";
+import { useUIConfig } from "../../context/UIConfigContext";
 import { IMapTaskPosition, IUserInGroupData } from "../../consts";
 import { useAuthContext } from "../../auth/AuthContext";
 
@@ -11,6 +11,8 @@ interface IProps {
 
 export const Step: FC<IProps> = ({ group, groupIndex }) => {
   const { user } = useAuthContext();
+  const { uiConfig } = useUIConfig();
+
   const hoverAnimation = {
     backgroundColor: "rgba(0, 0, 0, 0.3)",
     scale: 1.1,
@@ -19,6 +21,10 @@ export const Step: FC<IProps> = ({ group, groupIndex }) => {
       type: "linear",
     },
   };
+
+  if (!uiConfig) {
+    return null;
+  }
 
   // Get step shadow based on configuration
   const stepShadow = groupIndex < uiConfig.steps.shadow.greenThreshold 

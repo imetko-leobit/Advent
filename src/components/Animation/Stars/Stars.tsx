@@ -1,9 +1,14 @@
 import { motion } from "framer-motion";
-import { uiConfig, getStarImage } from "../../../config";
+import { useUIConfig } from "../../../context/UIConfigContext";
 import { useMemo } from "react";
 
 export const Stars = () => {
-  const starImage = getStarImage();
+  const { uiConfig } = useUIConfig();
+
+  if (!uiConfig || !uiConfig.animations?.stars) {
+    return null;
+  }
+
   const { stars } = uiConfig.animations;
 
   // Group stars by duration for animation - memoized for performance
@@ -35,7 +40,7 @@ export const Stars = () => {
           {starsInGroup.map((star, index) => (
             <img
               key={`${duration}-${index}`}
-              src={starImage}
+              src={star.image}
               style={{
                 position: "absolute",
                 top: star.top,

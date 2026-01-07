@@ -1,7 +1,13 @@
 import { motion } from "framer-motion";
-import { uiConfig } from "../../../config";
+import { useUIConfig } from "../../../context/UIConfigContext";
 
 export const Girl = () => {
+  const { uiConfig } = useUIConfig();
+
+  if (!uiConfig || !uiConfig.animations?.character || !uiConfig.animations.character.enabled) {
+    return null;
+  }
+
   const { character } = uiConfig.animations;
 
   return (

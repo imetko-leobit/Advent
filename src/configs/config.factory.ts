@@ -16,8 +16,9 @@ export type QuestConfigType = "default" | "extreme";
 /**
  * Configuration factory map
  * Maps config type to dynamic import function
+ * All config modules should export a QuestConfig as default
  */
-const configFactoryMap: Record<QuestConfigType, () => Promise<{ default?: QuestConfig; defaultQuestConfig?: QuestConfig; extremeQuestConfig?: QuestConfig }>> = {
+const configFactoryMap: Record<QuestConfigType, () => Promise<{ default: QuestConfig }>> = {
   default: () => import("./quest-default"),
   extreme: () => import("./quest-extreme"),
 };
@@ -39,18 +40,10 @@ export async function loadQuestConfig(type: QuestConfigType): Promise<QuestConfi
     }
     
     const module = await factory();
-    
-    // Handle different export patterns
-    let config: QuestConfig | undefined;
-    
-    if (type === "default") {
-      config = module.defaultQuestConfig || module.default;
-    } else if (type === "extreme") {
-      config = module.extremeQuestConfig || module.default;
-    }
+    const config = module.default;
     
     if (!config) {
-      throw new Error(`Config module for "${type}" did not export expected configuration`);
+      throw new Error(`Config module for "${type}" did not export a default configuration`);
     }
     
     logger.info("ConfigFactory", `Successfully loaded ${type} quest config`);

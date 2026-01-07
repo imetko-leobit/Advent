@@ -11,4 +11,4 @@ import { questConfig } from "../config/quest.config";
  * Default Quest Configuration
  * This is the standard Well Being Quest
  */
-export const defaultQuestConfig = questConfig;
+export default questConfig;

@@ -130,7 +130,13 @@ export const extremeQuestConfig: QuestConfig = {
 };
 
 /**
+ * Export as default for consistency with factory pattern
+ */
+export default extremeQuestConfig;
+
+/**
  * Extreme Quest UI Theme Configuration
+ * Note: These are exported for reference but not yet integrated into the UI rendering
  */
 export const extremeQuestTheme = {
   primary: "#ff3b30", // Red - intense and energetic
@@ -140,9 +146,10 @@ export const extremeQuestTheme = {
 
 /**
  * Extreme Quest Map Configuration
+ * Note: This is exported for reference but not yet integrated into the UI rendering
  */
 export const extremeQuestMap = {
-  image: "/assets/maps/extreme-map.png",
+  image: "/assets/maps/extreme-map.svg",
   markers: [
     { id: 1, label: "Extreme Start", x: 10, y: 85, difficulty: "extreme" },
     { id: 2, label: "Power Challenge 1", x: 18, y: 72, difficulty: "hard" },
@@ -163,6 +170,7 @@ export const extremeQuestMap = {
 
 /**
  * Extreme Quest Rules and Scoring
+ * Note: This is exported for reference but not yet integrated into the scoring system
  */
 export const extremeQuestRules = {
   maxDailyPoints: 7, // Higher daily limit for extreme challenges

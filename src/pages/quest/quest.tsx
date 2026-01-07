@@ -7,6 +7,7 @@ import { useLoading } from "../../context/LoadingContext";
 import { usersDataMapper } from "../../helpers/userDataMapper";
 import { useQuestData } from "../../hooks/useQuestData";
 import { useAuthContext } from "../../auth/AuthContext";
+import { ConfigDemo } from "../../components/ConfigDemo/ConfigDemo";
 
 export const Quest = () => {
   const { user } = useAuthContext();
@@ -46,6 +47,7 @@ export const Quest = () => {
         loading={loading}
         setIsGameButtonVisible={setIsGameButtonVisible}
       />
+      <ConfigDemo />
     </div>
   );
 };

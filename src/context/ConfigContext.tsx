@@ -19,6 +19,7 @@ import {
   ConfigLoadResult,
 } from "../utils/configLoader";
 import { logger } from "../utils/logger";
+import { loadQuestConfig, QuestConfigType, getAvailableQuestConfigs } from "../configs/config.factory";
 
 /**
  * Configuration context state
@@ -29,12 +30,15 @@ interface ConfigContextState {
   isLoading: boolean;
   errors: string[];
   warnings: string[];
+  currentConfigType: QuestConfigType;
+  availableConfigTypes: QuestConfigType[];
   
   // Actions
   loadQuestConfigFromJSON: (url: string) => Promise<ConfigLoadResult<QuestConfig>>;
   loadQuestConfigFromObject: (config: Partial<QuestConfig>) => ConfigLoadResult<QuestConfig>;
   loadUIConfigFromJSON: (url: string) => Promise<ConfigLoadResult<UIConfig>>;
   loadUIConfigFromObject: (config: Partial<UIConfig>) => ConfigLoadResult<UIConfig>;
+  loadQuestConfigByType: (type: QuestConfigType) => Promise<void>;
   resetToDefaults: () => void;
 }
 
@@ -69,6 +73,8 @@ export const ConfigProvider: React.FC<ConfigProviderProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
   const [warnings, setWarnings] = useState<string[]>([]);
+  const [currentConfigType, setCurrentConfigType] = useState<QuestConfigType>("default");
+  const [availableConfigTypes] = useState<QuestConfigType[]>(getAvailableQuestConfigs());
 
   /**
    * Load quest configuration from JSON file
@@ -194,10 +200,37 @@ export const ConfigProvider: React.FC<ConfigProviderProps> = ({
   const resetToDefaults = useCallback(() => {
     setQuestConfig(getDefaultQuestConfig());
     setUIConfig(getDefaultUIConfig());
+    setCurrentConfigType("default");
     setErrors([]);
     setWarnings([]);
     logger.info("ConfigContext", "Reset to default configurations");
   }, []);
+
+  /**
+   * Load quest configuration by type using factory
+   */
+  const handleLoadQuestConfigByType = useCallback(
+    async (type: QuestConfigType): Promise<void> => {
+      setIsLoading(true);
+      setErrors([]);
+      setWarnings([]);
+      
+      try {
+        logger.info("ConfigContext", `Switching to ${type} quest configuration`);
+        const config = await loadQuestConfig(type);
+        setQuestConfig(config);
+        setCurrentConfigType(type);
+        logger.info("ConfigContext", `Successfully switched to ${type} quest configuration`);
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        setErrors([errorMessage]);
+        logger.error("ConfigContext", `Failed to load ${type} quest config`, error);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
 
   const value: ConfigContextState = {
     questConfig,
@@ -205,10 +238,13 @@ export const ConfigProvider: React.FC<ConfigProviderProps> = ({
     isLoading,
     errors,
     warnings,
+    currentConfigType,
+    availableConfigTypes,
     loadQuestConfigFromJSON: handleLoadQuestConfigFromJSON,
     loadQuestConfigFromObject: handleLoadQuestConfigFromObject,
     loadUIConfigFromJSON: handleLoadUIConfigFromJSON,
     loadUIConfigFromObject: handleLoadUIConfigFromObject,
+    loadQuestConfigByType: handleLoadQuestConfigByType,
     resetToDefaults,
   };
 

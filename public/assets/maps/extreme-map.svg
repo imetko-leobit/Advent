@@ -1,0 +1,39 @@
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+  <!-- Extreme Quest Map Placeholder -->
+  <defs>
+    <linearGradient id="extremeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff3b30;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#ffd60a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4cd964;stop-opacity:1" />
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+    </pattern>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="800" height="600" fill="url(#extremeGradient)"/>
+  <rect width="800" height="600" fill="url(#grid)"/>
+  
+  <!-- Mountain shapes for extreme terrain -->
+  <path d="M 0 600 L 150 300 L 300 600 Z" fill="rgba(0,0,0,0.2)"/>
+  <path d="M 250 600 L 400 250 L 550 600 Z" fill="rgba(0,0,0,0.25)"/>
+  <path d="M 500 600 L 650 350 L 800 600 Z" fill="rgba(0,0,0,0.2)"/>
+  
+  <!-- Lightning bolts for extreme theme -->
+  <path d="M 100 50 L 80 120 L 110 120 L 90 200" stroke="#ffd60a" stroke-width="3" fill="none" opacity="0.6"/>
+  <path d="M 700 100 L 680 170 L 710 170 L 690 250" stroke="#ffd60a" stroke-width="3" fill="none" opacity="0.6"/>
+  
+  <!-- Stars for achievement points -->
+  <circle cx="150" cy="450" r="4" fill="#ffd60a" opacity="0.8"/>
+  <circle cx="400" cy="300" r="4" fill="#ffd60a" opacity="0.8"/>
+  <circle cx="650" cy="400" r="4" fill="#ffd60a" opacity="0.8"/>
+  
+  <!-- Text overlay -->
+  <text x="400" y="50" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="white" text-anchor="middle" opacity="0.7">
+    EXTREME QUEST MAP
+  </text>
+  <text x="400" y="80" font-family="Arial, sans-serif" font-size="16" fill="white" text-anchor="middle" opacity="0.5">
+    (Placeholder - Replace with actual map)
+  </text>
+</svg>

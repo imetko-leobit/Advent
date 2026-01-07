@@ -1,8 +1,13 @@
 import { motion } from "framer-motion";
-import { uiConfig, getCloudImage } from "../../../config";
+import { useUIConfig } from "../../../context/UIConfigContext";
 
 export const Clouds = () => {
-  const cloudImage = getCloudImage();
+  const { uiConfig } = useUIConfig();
+
+  if (!uiConfig || !uiConfig.animations?.clouds) {
+    return null;
+  }
+
   const { clouds } = uiConfig.animations;
 
   return (
@@ -10,7 +15,7 @@ export const Clouds = () => {
       {clouds.map((cloud, index) => (
         <motion.img
           key={index}
-          src={cloudImage}
+          src={cloud.image}
           style={{
             position: "absolute",
             top: cloud.top,

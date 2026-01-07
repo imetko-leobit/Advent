@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { IMapTaskPosition } from "../consts";
 import { FinishScreen } from "./FinishScreen/FinishScreen";
 import { useLoading } from "../context/LoadingContext";
-import { uiConfig } from "../config";
+import { useUIConfig } from "../context/UIConfigContext";
 import { Stars } from "./Animation/Stars/Stars";
 import { Clouds } from "./Animation/Clouds/Clouds";
 import { Girl } from "./Animation/Girl/Girl";
@@ -25,6 +25,7 @@ interface IProps {
 
 export const SVGMap: FC<IProps> = ({ tableData, setIsGameButtonVisible }) => {
   const { loading } = useLoading();
+  const { uiConfig } = useUIConfig();
 
   const myRef = useRef<HTMLDivElement>(null);
   const stackedPointersRef = useRef<HTMLDivElement>(null);
@@ -80,6 +81,11 @@ export const SVGMap: FC<IProps> = ({ tableData, setIsGameButtonVisible }) => {
 
   // Show empty state if not loading and no data
   const showEmptyState = !loading && (!tableData || tableData.length === 0);
+
+  // Don't render if uiConfig is not loaded yet
+  if (!uiConfig) {
+    return null;
+  }
 
   return (
     <>

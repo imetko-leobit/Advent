@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { FC, useState } from "react";
 import { IUserInGroupData } from "../../consts";
-import { coloredPointers } from "../../consts/colors";
+import { useUIConfig } from "../../context/UIConfigContext";
 import { calcAvatarPositionAndSize } from "../../helpers/calcAvatarSize";
 
 interface IProps {
@@ -12,6 +12,7 @@ interface IProps {
 
 export const Pointer: FC<IProps> = ({ user, usersCount, index }) => {
   const [isTooltipVisible, setIsTooltipVisible] = useState(false);
+  const { uiConfig } = useUIConfig();
 
   const calculateElementSize = () => {
     const maxUsersPerRow = 5;
@@ -25,6 +26,13 @@ export const Pointer: FC<IProps> = ({ user, usersCount, index }) => {
 
     return { width: `${widthPercentage}%`, height: `${heightPercentage}%` };
   };
+
+  if (!uiConfig) {
+    return null;
+  }
+
+  // Build the pointer color matrix
+  const pointerColors = uiConfig.pointers.colors.map(color => color.icons);
 
   return (
     <div
@@ -74,8 +82,8 @@ export const Pointer: FC<IProps> = ({ user, usersCount, index }) => {
       )}
       <img
         src={
-          coloredPointers[user.socialNetworkPoint][
-            index % coloredPointers[0].length
+          pointerColors[user.socialNetworkPoint][
+            index % pointerColors[0].length
           ]
         }
         style={{

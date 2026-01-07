@@ -1,7 +1,6 @@
 import { IdTokenClaims } from "oidc-client-ts";
 import { IRowData, IUserDataWithPostition } from "../consts";
 import { questEngine } from "../domain";
-import { uiConfig } from "../config";
 
 /**
  * Legacy mapper for backward compatibility
@@ -18,7 +17,11 @@ export const positionMapper = (
  * Maps users with position data to map task positions
  * Now uses QuestEngine for all business logic
  */
-export const usersDataMapper = (jsonData: IRowData[], user: IdTokenClaims) => {
+export const usersDataMapper = (
+  jsonData: IRowData[], 
+  user: IdTokenClaims,
+  taskPositions: Array<{ taskNumber: number; cxPointers: number; cyPointers: number; cxStep: number; cyStep: number; }>
+) => {
   // Evaluate all users' progress using QuestEngine
   const usersProgress = questEngine.evaluateAllUsersProgress(jsonData);
   
@@ -26,7 +29,7 @@ export const usersDataMapper = (jsonData: IRowData[], user: IdTokenClaims) => {
   const usersMappedData = questEngine.groupUsersByPosition(
     usersProgress,
     user.sub,
-    uiConfig.taskPositions
+    taskPositions
   );
 
   return usersMappedData;

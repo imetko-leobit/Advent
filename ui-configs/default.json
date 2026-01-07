@@ -1,0 +1,83 @@
+{
+  "name": "Default Well Being Quest",
+  "map": {
+    "background": "/src/assets/background/Quest_background.svg",
+    "mapSvg": "/src/assets/map/Map.svg",
+    "width": "100%",
+    "height": "100%"
+  },
+  "steps": [
+    { "taskNumber": 0, "cxPointers": 15.8, "cyPointers": 21, "cxStep": 16.5, "cyStep": 32.5, "icon": "/src/assets/steps/zero.svg" },
+    { "taskNumber": 1, "cxPointers": 20.8, "cyPointers": 33.5, "cxStep": 21.5, "cyStep": 43.5, "icon": "/src/assets/steps/1.svg" },
+    { "taskNumber": 2, "cxPointers": 19.2, "cyPointers": 64, "cxStep": 20, "cyStep": 74, "icon": "/src/assets/steps/2.svg" },
+    { "taskNumber": 3, "cxPointers": 27.7, "cyPointers": 69, "cxStep": 28.5, "cyStep": 79, "icon": "/src/assets/steps/3.svg" },
+    { "taskNumber": 4, "cxPointers": 44.2, "cyPointers": 55.5, "cxStep": 45, "cyStep": 65.5, "icon": "/src/assets/steps/4.svg" },
+    { "taskNumber": 5, "cxPointers": 39, "cyPointers": 41.2, "cxStep": 40, "cyStep": 50.8, "icon": "/src/assets/steps/5.svg" },
+    { "taskNumber": 6, "cxPointers": 32.8, "cyPointers": 31, "cxStep": 33.5, "cyStep": 41, "icon": "/src/assets/steps/6.svg" },
+    { "taskNumber": 7, "cxPointers": 36, "cyPointers": 15, "cxStep": 36.7, "cyStep": 25, "icon": "/src/assets/steps/7.svg" },
+    { "taskNumber": 8, "cxPointers": 54.6, "cyPointers": 15.5, "cxStep": 55.5, "cyStep": 25.5, "icon": "/src/assets/steps/8.svg" },
+    { "taskNumber": 9, "cxPointers": 58.7, "cyPointers": 30.5, "cxStep": 59.5, "cyStep": 40.5, "icon": "/src/assets/steps/9.svg" },
+    { "taskNumber": 10, "cxPointers": 53.1, "cyPointers": 53.2, "cxStep": 54, "cyStep": 63, "icon": "/src/assets/steps/10.svg" },
+    { "taskNumber": 11, "cxPointers": 60.2, "cyPointers": 64, "cxStep": 61, "cyStep": 74, "icon": "/src/assets/steps/11.svg" },
+    { "taskNumber": 12, "cxPointers": 73.6, "cyPointers": 60.5, "cxStep": 74.5, "cyStep": 70.5, "icon": "/src/assets/steps/12.svg" },
+    { "taskNumber": 13, "cxPointers": 74.7, "cyPointers": 44.5, "cxStep": 75.5, "cyStep": 54.5, "icon": "/src/assets/steps/13.svg" },
+    { "taskNumber": 14, "cxPointers": 71.3, "cyPointers": 29, "cxStep": 72, "cyStep": 39, "icon": "/src/assets/steps/14.svg" }
+  ],
+  "theme": {
+    "palette": {
+      "primary": "#6366F1",
+      "secondary": "#8B5CF6",
+      "accent": "#EC4899"
+    },
+    "pointerStyle": {
+      "maxVisibleInTooltip": 5,
+      "maxBeforeModal": 5,
+      "colors": [
+        { "name": "red", "icons": ["/src/assets/pointers/red/zero.svg", "/src/assets/pointers/red/one.svg", "/src/assets/pointers/red/two.svg", "/src/assets/pointers/red/three.svg"] },
+        { "name": "yellow", "icons": ["/src/assets/pointers/yellow/zero.svg", "/src/assets/pointers/yellow/one.svg", "/src/assets/pointers/yellow/two.svg", "/src/assets/pointers/yellow/three.svg"] },
+        { "name": "cyan", "icons": ["/src/assets/pointers/cyan/zero.svg", "/src/assets/pointers/cyan/one.svg", "/src/assets/pointers/cyan/two.svg", "/src/assets/pointers/cyan/three.svg"] },
+        { "name": "green", "icons": ["/src/assets/pointers/green/zero.svg", "/src/assets/pointers/green/one.svg", "/src/assets/pointers/green/two.svg", "/src/assets/pointers/green/three.svg"] },
+        { "name": "orange", "icons": ["/src/assets/pointers/orange/zero.svg", "/src/assets/pointers/orange/one.svg", "/src/assets/pointers/orange/two.svg", "/src/assets/pointers/orange/three.svg"] },
+        { "name": "purple", "icons": ["/src/assets/pointers/purple/zero.svg", "/src/assets/pointers/purple/one.svg", "/src/assets/pointers/purple/two.svg", "/src/assets/pointers/purple/three.svg"] }
+      ]
+    },
+    "stepShadow": {
+      "green": "/src/assets/pointers-shadow/Green.svg",
+      "purple": "/src/assets/pointers-shadow/Purple.svg",
+      "greenThreshold": 10
+    }
+  },
+  "animations": {
+    "stars": [
+      { "top": "80%", "left": "60%", "height": "3%", "width": "3%", "duration": 1.2, "image": "/src/assets/star/Star.svg" },
+      { "top": "78%", "left": "81%", "height": "3%", "width": "3%", "duration": 1.2, "image": "/src/assets/star/Star.svg" },
+      { "top": "44%", "left": "90%", "height": "3%", "width": "3%", "duration": 1.2, "image": "/src/assets/star/Star.svg" },
+      { "top": "87%", "left": "67%", "height": "2%", "width": "2%", "duration": 0.7, "image": "/src/assets/star/Star.svg" },
+      { "top": "87%", "left": "91%", "height": "2%", "width": "2%", "duration": 0.7, "image": "/src/assets/star/Star.svg" },
+      { "top": "45%", "left": "77%", "height": "2%", "width": "2%", "duration": 0.7, "image": "/src/assets/star/Star.svg" },
+      { "top": "86%", "left": "72%", "height": "2.5%", "width": "2.5%", "duration": 1, "image": "/src/assets/star/Star.svg" },
+      { "top": "64%", "left": "88%", "height": "2.5%", "width": "2.5%", "duration": 1, "image": "/src/assets/star/Star.svg" },
+      { "top": "34%", "left": "90%", "height": "2.5%", "width": "2.5%", "duration": 1, "image": "/src/assets/star/Star.svg" },
+      { "top": "69%", "left": "84%", "height": "4%", "width": "4%", "duration": 1, "image": "/src/assets/star/Star.svg" }
+    ],
+    "clouds": [
+      { "top": "25%", "left": "70%", "height": "5%", "width": "5%", "duration": 5, "translateFrom": "-40%", "translateTo": "20%", "image": "/src/assets/clouds/Cloud.svg" },
+      { "top": "20%", "left": "60%", "height": "7%", "width": "7%", "duration": 7, "translateFrom": "-40%", "translateTo": "20%", "image": "/src/assets/clouds/Cloud.svg" },
+      { "top": "30%", "left": "25%", "height": "6%", "width": "6%", "duration": 9, "translateFrom": "-30%", "translateTo": "30%", "image": "/src/assets/clouds/Cloud.svg" },
+      { "top": "42%", "left": "13%", "height": "8%", "width": "8%", "duration": 8, "translateFrom": "-40%", "translateTo": "20%", "image": "/src/assets/clouds/Cloud.svg" }
+    ],
+    "character": {
+      "enabled": true,
+      "image": "/src/assets/girl-with-shadow/Girl.svg",
+      "shadow": "/src/assets/girl-with-shadow/Shadow.svg",
+      "position": { "left": "79.3%", "top": "28%", "height": "15%" },
+      "shadowPosition": { "left": "81%", "top": "37%", "height": "2%" },
+      "animation": { "translateFrom": "-45%", "translateTo": "-40%", "duration": 4 },
+      "shadowAnimation": { "scaleFrom": 0.8, "scaleTo": 1.2, "duration": 4 }
+    }
+  },
+  "finishScreens": {
+    "finish": "/src/assets/finish-screens/Finish_screen.svg",
+    "dzen": "/src/assets/finish-screens/Dzen_screen.svg"
+  }
+}

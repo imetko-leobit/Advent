@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { GameButton } from "../../components/GameButton/GameButton";
 import { SVGMap } from "../../components/Map";
+import { ConfigDemo } from "../../components/ConfigDemo/ConfigDemo";
 import { IMapTaskPosition } from "../../consts";
 import { useLoading } from "../../context/LoadingContext";
 import { useUIConfig } from "../../context/UIConfigContext";
@@ -68,6 +69,7 @@ export const Quest = () => {
         loading={loading}
         setIsGameButtonVisible={setIsGameButtonVisible}
       />
+      <ConfigDemo />
     </div>
   );
 };

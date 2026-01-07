@@ -5,10 +5,12 @@
  * This component is for development/demo purposes and can be imported in any page
  */
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useConfig } from "../../context/ConfigContext";
 import { useDataSource } from "../../hooks/useDataSource";
+import { useUIConfig } from "../../context/UIConfigContext";
 import { DataSourceType } from "../../services/types";
+import { discoverAvailableUIThemes } from "../../services/uiThemeDiscovery";
 
 export const ConfigDemo: React.FC = () => {
   const {
@@ -29,7 +31,18 @@ export const ConfigDemo: React.FC = () => {
     refreshData,
   } = useDataSource();
 
+  const {
+    uiConfig,
+    isLoading: uiLoading,
+    error: uiError,
+    configKey: currentUITheme,
+    switchConfig: switchUITheme,
+  } = useUIConfig();
+
   const [showDemo, setShowDemo] = useState(false);
+
+  // Discover available UI themes
+  const availableThemes = useMemo(() => discoverAvailableUIThemes(), []);
 
   const handleLoadExampleConfig = async () => {
     await loadQuestConfigFromJSON("/example-quest-config.json");
@@ -52,6 +65,10 @@ export const ConfigDemo: React.FC = () => {
       type: DataSourceType.GOOGLE_SHEETS,
       url,
     });
+  };
+
+  const handleUIThemeChange = async (themeName: string) => {
+    await switchUITheme(themeName);
   };
 
   if (!showDemo) {
@@ -196,6 +213,69 @@ export const ConfigDemo: React.FC = () => {
           >
             Reset to Defaults
           </button>
+        </div>
+      </div>
+
+      <div style={{ marginBottom: "20px" }}>
+        <h4 style={{ marginTop: 0 }}>🎨 UI Theme</h4>
+        <p style={{ fontSize: "14px", color: "#666", margin: "5px 0" }}>
+          <strong>Current Theme:</strong> {uiConfig?.name || currentUITheme}
+        </p>
+        <p style={{ fontSize: "14px", color: "#666", margin: "5px 0" }}>
+          <strong>Available:</strong> {availableThemes.length} themes
+        </p>
+        {uiLoading && (
+          <p style={{ fontSize: "14px", color: "#2196F3" }}>Loading UI theme...</p>
+        )}
+        {uiError && (
+          <div
+            style={{
+              backgroundColor: "#ffebee",
+              padding: "10px",
+              borderRadius: "4px",
+              marginTop: "10px",
+            }}
+          >
+            <strong style={{ color: "#c62828" }}>Error:</strong>
+            <p style={{ fontSize: "12px", color: "#c62828", margin: "5px 0" }}>
+              {uiError}
+            </p>
+          </div>
+        )}
+        <div style={{ marginTop: "10px" }}>
+          <label
+            style={{
+              display: "block",
+              fontSize: "12px",
+              marginBottom: "5px",
+              color: "#333",
+            }}
+          >
+            Select Theme:
+          </label>
+          <select
+            value={currentUITheme}
+            onChange={(e) => handleUIThemeChange(e.target.value)}
+            disabled={uiLoading}
+            style={{
+              width: "100%",
+              padding: "8px",
+              fontSize: "14px",
+              border: "1px solid #ccc",
+              borderRadius: "4px",
+              cursor: uiLoading ? "not-allowed" : "pointer",
+              backgroundColor: currentUITheme !== 'default' ? "#e8f5e9" : "white",
+            }}
+          >
+            {availableThemes.map((theme) => (
+              <option key={theme.name} value={theme.name}>
+                {theme.displayTitle}
+              </option>
+            ))}
+          </select>
+          <p style={{ fontSize: "11px", color: "#999", margin: "5px 0" }}>
+            💡 Theme changes apply instantly without page reload
+          </p>
         </div>
       </div>
 

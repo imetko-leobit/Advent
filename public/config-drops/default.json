@@ -1,0 +1,94 @@
+{
+  "name": "Well Being Quest",
+  "taskCount": 15,
+  "tasks": [
+    {
+      "id": 0,
+      "label": "Старт",
+      "type": "core"
+    },
+    {
+      "id": 1,
+      "label": "1. Список справ",
+      "type": "core"
+    },
+    {
+      "id": 2,
+      "label": "2. Пункт зі списку",
+      "type": "core"
+    },
+    {
+      "id": 3,
+      "label": "3. Прогулянка на свіжому повітрі",
+      "type": "core"
+    },
+    {
+      "id": 4,
+      "label": "4. Список вдячності",
+      "type": "core"
+    },
+    {
+      "id": 5,
+      "label": "5. Добра справа",
+      "type": "extra"
+    },
+    {
+      "id": 6,
+      "label": "5. Добра справа",
+      "type": "extra"
+    },
+    {
+      "id": 7,
+      "label": "5. Добра справа",
+      "type": "extra"
+    },
+    {
+      "id": 8,
+      "label": "5. Добра справа",
+      "type": "extra"
+    },
+    {
+      "id": 9,
+      "label": "5. Добра справа",
+      "type": "finish"
+    },
+    {
+      "id": 10,
+      "label": "5. Добра справа",
+      "type": "extra"
+    },
+    {
+      "id": 11,
+      "label": "5. Добра справа",
+      "type": "extra"
+    },
+    {
+      "id": 12,
+      "label": "5. Добра справа",
+      "type": "extra"
+    },
+    {
+      "id": 13,
+      "label": "5. Добра справа",
+      "type": "extra"
+    },
+    {
+      "id": 14,
+      "label": "5. Добра справа",
+      "type": "finish"
+    }
+  ],
+  "finalTaskIds": [9, 14],
+  "firstFinishTaskId": 9,
+  "finalFinishTaskId": 14,
+  "finishAnimations": {
+    "finalFinish": {
+      "top": "38%",
+      "left": "245%"
+    },
+    "firstFinish": {
+      "top": "130%",
+      "left": "-75%"
+    }
+  }
+}

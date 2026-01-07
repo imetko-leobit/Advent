@@ -4,9 +4,10 @@
  * Provides centralized access to quest and UI configurations
  * Enables runtime configuration changes without code modifications
  * Supports dynamic config loading and switching
+ * Includes URL parameter and localStorage support
  */
 
-import React, { createContext, useContext, useState, useCallback, ReactNode } from "react";
+import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode } from "react";
 import { QuestConfig } from "../config/quest.config";
 import { UIConfig } from "../config/uiConfig";
 import {
@@ -18,7 +19,13 @@ import {
   getDefaultUIConfig,
   ConfigLoadResult,
 } from "../utils/configLoader";
+import { loadQuestConfig } from "../config/config.factory";
 import { logger } from "../utils/logger";
+
+/**
+ * localStorage key for storing the last selected config
+ */
+const CONFIG_STORAGE_KEY = 'wellbeing-quest-config';
 
 /**
  * Configuration context state
@@ -29,12 +36,14 @@ interface ConfigContextState {
   isLoading: boolean;
   errors: string[];
   warnings: string[];
+  currentConfigKey: string | null;
   
   // Actions
   loadQuestConfigFromJSON: (url: string) => Promise<ConfigLoadResult<QuestConfig>>;
   loadQuestConfigFromObject: (config: Partial<QuestConfig>) => ConfigLoadResult<QuestConfig>;
   loadUIConfigFromJSON: (url: string) => Promise<ConfigLoadResult<UIConfig>>;
   loadUIConfigFromObject: (config: Partial<UIConfig>) => ConfigLoadResult<UIConfig>;
+  loadQuestConfigByKey: (key: string) => Promise<boolean>;
   resetToDefaults: () => void;
 }
 
@@ -69,6 +78,42 @@ export const ConfigProvider: React.FC<ConfigProviderProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
   const [warnings, setWarnings] = useState<string[]>([]);
+  const [currentConfigKey, setCurrentConfigKey] = useState<string | null>(null);
+
+  /**
+   * Load quest configuration from config-drops by key
+   */
+  const handleLoadQuestConfigByKey = useCallback(
+    async (key: string): Promise<boolean> => {
+      setIsLoading(true);
+      setErrors([]);
+      setWarnings([]);
+      
+      try {
+        const config = await loadQuestConfig(key);
+        setQuestConfig(config);
+        setCurrentConfigKey(key);
+        
+        // Save to localStorage
+        try {
+          localStorage.setItem(CONFIG_STORAGE_KEY, key);
+        } catch (e) {
+          logger.warn("ConfigContext", "Failed to save config key to localStorage", e);
+        }
+        
+        logger.info("ConfigContext", `Quest config '${key}' loaded successfully`);
+        return true;
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        logger.error("ConfigContext", `Failed to load quest config '${key}'`, error);
+        setErrors([errorMessage]);
+        return false;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
 
   /**
    * Load quest configuration from JSON file
@@ -194,10 +239,49 @@ export const ConfigProvider: React.FC<ConfigProviderProps> = ({
   const resetToDefaults = useCallback(() => {
     setQuestConfig(getDefaultQuestConfig());
     setUIConfig(getDefaultUIConfig());
+    setCurrentConfigKey(null);
     setErrors([]);
     setWarnings([]);
+    
+    // Clear localStorage
+    try {
+      localStorage.removeItem(CONFIG_STORAGE_KEY);
+    } catch (e) {
+      logger.warn("ConfigContext", "Failed to clear config key from localStorage", e);
+    }
+    
     logger.info("ConfigContext", "Reset to default configurations");
   }, []);
+
+  /**
+   * Load configuration from URL parameter or localStorage on mount
+   */
+  useEffect(() => {
+    const loadInitialConfig = async () => {
+      // Check URL parameter first
+      const urlParams = new URLSearchParams(window.location.search);
+      const questParam = urlParams.get('quest');
+      
+      if (questParam) {
+        logger.info("ConfigContext", `Loading config from URL parameter: ${questParam}`);
+        await handleLoadQuestConfigByKey(questParam);
+        return;
+      }
+      
+      // Check localStorage
+      try {
+        const savedConfigKey = localStorage.getItem(CONFIG_STORAGE_KEY);
+        if (savedConfigKey) {
+          logger.info("ConfigContext", `Loading config from localStorage: ${savedConfigKey}`);
+          await handleLoadQuestConfigByKey(savedConfigKey);
+        }
+      } catch (e) {
+        logger.warn("ConfigContext", "Failed to load config from localStorage", e);
+      }
+    };
+    
+    loadInitialConfig();
+  }, [handleLoadQuestConfigByKey]);
 
   const value: ConfigContextState = {
     questConfig,
@@ -205,10 +289,12 @@ export const ConfigProvider: React.FC<ConfigProviderProps> = ({
     isLoading,
     errors,
     warnings,
+    currentConfigKey,
     loadQuestConfigFromJSON: handleLoadQuestConfigFromJSON,
     loadQuestConfigFromObject: handleLoadQuestConfigFromObject,
     loadUIConfigFromJSON: handleLoadUIConfigFromJSON,
     loadUIConfigFromObject: handleLoadUIConfigFromObject,
+    loadQuestConfigByKey: handleLoadQuestConfigByKey,
     resetToDefaults,
   };
 

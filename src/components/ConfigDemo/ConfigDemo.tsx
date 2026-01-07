@@ -16,6 +16,8 @@ export const ConfigDemo: React.FC = () => {
     isLoading: configLoading,
     errors: configErrors,
     warnings: configWarnings,
+    currentConfigKey,
+    loadQuestConfigByKey,
     loadQuestConfigFromJSON,
     resetToDefaults,
   } = useConfig();
@@ -30,6 +32,14 @@ export const ConfigDemo: React.FC = () => {
   } = useDataSource();
 
   const [showDemo, setShowDemo] = useState(false);
+
+  const handleLoadDefaultConfig = async () => {
+    await loadQuestConfigByKey("default");
+  };
+
+  const handleLoadExtremeConfig = async () => {
+    await loadQuestConfigByKey("extreme");
+  };
 
   const handleLoadExampleConfig = async () => {
     await loadQuestConfigFromJSON("/example-quest-config.json");
@@ -122,6 +132,9 @@ export const ConfigDemo: React.FC = () => {
           <strong>Current Quest:</strong> {questConfig.name}
         </p>
         <p style={{ fontSize: "14px", color: "#666", margin: "5px 0" }}>
+          <strong>Config Key:</strong> {currentConfigKey || 'default (TypeScript)'}
+        </p>
+        <p style={{ fontSize: "14px", color: "#666", margin: "5px 0" }}>
           <strong>Task Count:</strong> {questConfig.taskCount}
         </p>
         {configLoading && (
@@ -165,13 +178,42 @@ export const ConfigDemo: React.FC = () => {
             </ul>
           </div>
         )}
-        <div style={{ marginTop: "10px" }}>
+        <div style={{ marginTop: "10px", display: "flex", flexWrap: "wrap", gap: "8px" }}>
+          <button
+            onClick={handleLoadDefaultConfig}
+            disabled={configLoading}
+            style={{
+              padding: "8px 16px",
+              backgroundColor: "#4CAF50",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: configLoading ? "not-allowed" : "pointer",
+              fontSize: "12px",
+            }}
+          >
+            Load Default
+          </button>
+          <button
+            onClick={handleLoadExtremeConfig}
+            disabled={configLoading}
+            style={{
+              padding: "8px 16px",
+              backgroundColor: "#ff3b30",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: configLoading ? "not-allowed" : "pointer",
+              fontSize: "12px",
+            }}
+          >
+            Load Extreme
+          </button>
           <button
             onClick={handleLoadExampleConfig}
             disabled={configLoading}
             style={{
               padding: "8px 16px",
-              marginRight: "10px",
               backgroundColor: "#2196F3",
               color: "white",
               border: "none",
@@ -180,7 +222,7 @@ export const ConfigDemo: React.FC = () => {
               fontSize: "12px",
             }}
           >
-            Load Example Config
+            Load Example
           </button>
           <button
             onClick={resetToDefaults}

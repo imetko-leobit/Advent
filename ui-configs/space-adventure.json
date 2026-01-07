@@ -29,11 +29,11 @@
       "maxBeforeModal": 5,
       "colors": [
         { "name": "gold", "icons": ["/assets/pointers/space/zero.svg", "/assets/pointers/space/one.svg", "/assets/pointers/space/two.svg", "/assets/pointers/space/three.svg"] },
-        { "name": "gold", "icons": ["/assets/pointers/space/zero.svg", "/assets/pointers/space/one.svg", "/assets/pointers/space/two.svg", "/assets/pointers/space/three.svg"] },
-        { "name": "gold", "icons": ["/assets/pointers/space/zero.svg", "/assets/pointers/space/one.svg", "/assets/pointers/space/two.svg", "/assets/pointers/space/three.svg"] },
-        { "name": "gold", "icons": ["/assets/pointers/space/zero.svg", "/assets/pointers/space/one.svg", "/assets/pointers/space/two.svg", "/assets/pointers/space/three.svg"] },
-        { "name": "gold", "icons": ["/assets/pointers/space/zero.svg", "/assets/pointers/space/one.svg", "/assets/pointers/space/two.svg", "/assets/pointers/space/three.svg"] },
-        { "name": "gold", "icons": ["/assets/pointers/space/zero.svg", "/assets/pointers/space/one.svg", "/assets/pointers/space/two.svg", "/assets/pointers/space/three.svg"] }
+        { "name": "silver", "icons": ["/assets/pointers/silver/zero.svg", "/assets/pointers/silver/one.svg", "/assets/pointers/silver/two.svg", "/assets/pointers/silver/three.svg"] },
+        { "name": "blue", "icons": ["/assets/pointers/blue/zero.svg", "/assets/pointers/blue/one.svg", "/assets/pointers/blue/two.svg", "/assets/pointers/blue/three.svg"] },
+        { "name": "purple", "icons": ["/assets/pointers/purple/zero.svg", "/assets/pointers/purple/one.svg", "/assets/pointers/purple/two.svg", "/assets/pointers/purple/three.svg"] },
+        { "name": "cyan", "icons": ["/assets/pointers/cyan/zero.svg", "/assets/pointers/cyan/one.svg", "/assets/pointers/cyan/two.svg", "/assets/pointers/cyan/three.svg"] },
+        { "name": "red", "icons": ["/assets/pointers/red/zero.svg", "/assets/pointers/red/one.svg", "/assets/pointers/red/two.svg", "/assets/pointers/red/three.svg"] }
       ]
     },
     "stepShadow": {

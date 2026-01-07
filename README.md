@@ -521,10 +521,51 @@ To add a new data source (e.g., REST API):
 
 The application now supports **dynamic configuration loading** and **runtime data source switching**, enabling you to:
 
-- Load different quest configurations without code changes
-- Switch map images and UI assets on the fly
-- Change data sources at runtime (Mock CSV ↔ Google Sheets ↔ API)
-- Test different configurations without rebuilding
+- 🎯 **Config-Drops System** - Store quest configs as JSON files in `/config-drops` folder
+- 🔍 **Zod Validation** - Comprehensive runtime validation with helpful error messages
+- 🔗 **URL Parameters** - Load configs via `?quest=extreme` in the URL
+- 💾 **localStorage Persistence** - Remember the last selected configuration
+- 🔄 **Hot-Reloadable** - Change JSON files and refresh browser (no rebuild needed)
+- 🗺️ **Switch UI Assets** - Change map images and UI assets on the fly
+- 📊 **Runtime Data Switching** - Change data sources at runtime (Mock CSV ↔ Google Sheets ↔ API)
+
+### Quick Start: Config-Drops
+
+The easiest way to create and use custom quest configurations is via the `/config-drops` folder:
+
+**1. Create a new JSON config:**
+```bash
+# Add your custom quest to config-drops/
+echo '{
+  "name": "My Custom Quest",
+  "taskCount": 10,
+  "tasks": [...]
+}' > config-drops/custom.json
+
+# Sync to public folder
+npm run sync-configs
+```
+
+**2. Load via URL parameter:**
+```
+http://localhost:3000?quest=custom
+```
+
+**3. Or load programmatically:**
+```typescript
+import { useConfig } from './context/ConfigContext';
+
+const { loadQuestConfigByKey } = useConfig();
+
+// Load from config-drops/extreme.json
+await loadQuestConfigByKey('extreme');
+```
+
+**Available configs:**
+- `default` - Standard Well Being Quest (15 tasks)
+- `extreme` - Extreme wellness challenges (14 tasks)
+
+See `/config-drops/README.md` for details on creating custom configurations.
 
 ### Dynamic Quest Configuration
 

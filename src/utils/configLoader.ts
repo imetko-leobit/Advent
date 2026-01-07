@@ -9,6 +9,7 @@
 import { QuestConfig, questConfig as defaultQuestConfig } from "../config/quest.config";
 import { UIConfig, uiConfig as defaultUIConfig } from "../config/uiConfig";
 import { validateQuestConfig } from "./configValidator";
+import { validateQuestConfigWithZod, validateQuestConfigManual } from "../services/configSchema";
 import { logger } from "./logger";
 
 /**
@@ -78,6 +79,7 @@ export function applyUIConfigDefaults(partialConfig: Partial<UIConfig>): UIConfi
 
 /**
  * Load quest configuration from a JSON file URL
+ * Now with Zod validation support
  */
 export async function loadQuestConfigFromJSON(url: string): Promise<ConfigLoadResult<QuestConfig>> {
   try {
@@ -90,28 +92,70 @@ export async function loadQuestConfigFromJSON(url: string): Promise<ConfigLoadRe
     }
     
     const jsonData = await response.json();
-    const config = applyQuestConfigDefaults(jsonData);
-    const validation = validateQuestConfig(config);
     
-    if (!validation.isValid) {
-      logger.error("ConfigLoader", "Loaded config is invalid", { errors: validation.errors });
+    // Try Zod validation first
+    const zodValidation = validateQuestConfigWithZod(jsonData);
+    
+    if (zodValidation.success && zodValidation.data) {
+      const config = applyQuestConfigDefaults(zodValidation.data as Partial<QuestConfig>);
+      const legacyValidation = validateQuestConfig(config);
+      
+      logger.info("ConfigLoader", "Successfully loaded and validated quest config from JSON with Zod");
+      
       return {
-        config: defaultQuestConfig,
-        source: "default",
-        isValid: false,
-        errors: validation.errors.map(e => e.message),
-        warnings: validation.warnings.map(w => w.message),
+        config,
+        source: "file",
+        isValid: true,
+        errors: [],
+        warnings: legacyValidation.warnings.map(w => w.message),
       };
     }
     
-    logger.info("ConfigLoader", "Successfully loaded and validated quest config from JSON");
+    // Fallback to manual validation
+    logger.warn("ConfigLoader", "Zod validation failed, trying manual validation");
+    
+    const manualValidation = validateQuestConfigManual(jsonData);
+    
+    if (manualValidation.success && manualValidation.data) {
+      const config = applyQuestConfigDefaults(manualValidation.data as Partial<QuestConfig>);
+      const legacyValidation = validateQuestConfig(config);
+      
+      if (!legacyValidation.isValid) {
+        logger.error("ConfigLoader", "Loaded config is invalid", { errors: legacyValidation.errors });
+        return {
+          config: defaultQuestConfig,
+          source: "default",
+          isValid: false,
+          errors: legacyValidation.errors.map(e => e.message),
+          warnings: legacyValidation.warnings.map(w => w.message),
+        };
+      }
+      
+      logger.info("ConfigLoader", "Successfully loaded and validated quest config from JSON with manual validation");
+      
+      return {
+        config,
+        source: "file",
+        isValid: true,
+        errors: [],
+        warnings: legacyValidation.warnings.map(w => w.message),
+      };
+    }
+    
+    // Both validations failed
+    const allErrors = [
+      ...(zodValidation.errors || []),
+      ...(manualValidation.errors || []),
+    ];
+    
+    logger.error("ConfigLoader", "All validations failed", { errors: allErrors });
     
     return {
-      config,
-      source: "file",
-      isValid: true,
-      errors: [],
-      warnings: validation.warnings.map(w => w.message),
+      config: defaultQuestConfig,
+      source: "default",
+      isValid: false,
+      errors: allErrors,
+      warnings: [],
     };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);

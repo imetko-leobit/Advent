@@ -94,11 +94,11 @@ export const ConfigDemo: React.FC = () => {
     setExpandedSections(newExpanded);
   };
 
-  const handleConfigChange = (path: string[], value: any) => {
+  const handleConfigChange = (path: string[], value: string | number | boolean) => {
     if (!localConfig) return;
 
     const newConfig = JSON.parse(JSON.stringify(localConfig));
-    let current: any = newConfig;
+    let current: Record<string, unknown> = newConfig as Record<string, unknown>;
     
     for (let i = 0; i < path.length - 1; i++) {
       current = current[path[i]];
@@ -126,14 +126,14 @@ export const ConfigDemo: React.FC = () => {
     const query = searchQuery.toLowerCase();
     const keys: string[] = [];
 
-    const search = (obj: any, prefix: string = "") => {
+    const search = (obj: Record<string, unknown>, prefix: string = "") => {
       for (const key in obj) {
         const path = prefix ? `${prefix}.${key}` : key;
         if (path.toLowerCase().includes(query)) {
           keys.push(path);
         }
         if (typeof obj[key] === "object" && obj[key] !== null && !Array.isArray(obj[key])) {
-          search(obj[key], path);
+          search(obj[key] as Record<string, unknown>, path);
         }
       }
     };
@@ -557,6 +557,16 @@ const Toggle: React.FC<{
   <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" }}>
     <div
       onClick={() => onChange(!checked)}
+      onKeyDown={(e) => {
+        if (e.key === " " || e.key === "Enter") {
+          e.preventDefault();
+          onChange(!checked);
+        }
+      }}
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
+      tabIndex={0}
       style={{
         width: "40px",
         height: "20px",

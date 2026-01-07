@@ -7,8 +7,50 @@ This document describes how to use the dynamic configuration loading and data so
 The application now supports:
 
 1. **Dynamic Quest Configuration** - Load different quest configurations at runtime without code changes
-2. **Dynamic UI Configuration** - Switch map images, positions, and assets dynamically
-3. **Runtime Data Source Switching** - Switch between Mock CSV, Google Sheets, and API data sources seamlessly
+2. **Config-Drops System** - Store quest configurations in `/config-drops` folder as JSON files
+3. **Zod Validation** - Validate configurations with comprehensive schema validation
+4. **URL Parameter & localStorage** - Load configs via URL or persist selection across sessions
+5. **Dynamic UI Configuration** - Switch map images, positions, and assets dynamically
+6. **Runtime Data Source Switching** - Switch between Mock CSV, Google Sheets, and API data sources seamlessly
+
+## Quick Start: Using Config-Drops
+
+### Load by Key (Recommended)
+
+The simplest way to load a configuration is by key from the `/config-drops` folder:
+
+```typescript
+import { useConfig } from './context/ConfigContext';
+
+function MyComponent() {
+  const { loadQuestConfigByKey } = useConfig();
+  
+  const handleLoadExtreme = async () => {
+    const success = await loadQuestConfigByKey('extreme');
+    if (success) {
+      console.log('Extreme quest loaded!');
+    }
+  };
+  
+  return <button onClick={handleLoadExtreme}>Load Extreme Quest</button>;
+}
+```
+
+### Load via URL Parameter
+
+Simply add `?quest=extreme` to the URL:
+```
+http://localhost:3000?quest=extreme
+```
+
+The configuration will be loaded automatically and saved to localStorage.
+
+### Available Configurations
+
+- `default.json` - Standard Well Being Quest (15 tasks)
+- `extreme.json` - Extreme wellness challenges (14 tasks)
+
+See `/config-drops/README.md` for details on creating custom configurations.
 
 ## Dynamic Configuration Loading
 
@@ -229,15 +271,39 @@ When using the API data source, the endpoint should return JSON in this format:
 ]
 ```
 
-## Configuration Validation and Fallback
+## Configuration Validation with Zod
 
 ### Automatic Validation
 
-All loaded configurations are automatically validated. If validation fails:
+All configurations loaded from `/config-drops` or JSON files are automatically validated using Zod schemas with comprehensive checks:
 
-1. Errors are logged to the console
-2. The application falls back to the default configuration
-3. A user-friendly error message is displayed (if configured)
+**Validation Rules:**
+- Required fields: `name`, `taskCount`, `tasks`, `finalTaskIds`, `firstFinishTaskId`, `finalFinishTaskId`, `finishAnimations`
+- Task count must match tasks array length
+- Task IDs must be sequential (0, 1, 2, ...)
+- Task types must be 'core', 'extra', or 'finish'
+- Final task IDs must be within valid range (0 to taskCount-1)
+- Map markers (if present) must have x/y coordinates between 0 and 100
+
+**Validation Process:**
+1. **Zod Validation** - Primary validation using Zod schema
+2. **Manual Validation** - Fallback if Zod validation fails
+3. **Legacy Validation** - Additional checks for compatibility
+4. **Error Fallback** - Returns default config if all validations fail
+
+### Example Validation Errors
+
+```typescript
+const { loadQuestConfigByKey } = useConfig();
+
+// This will show validation errors in the console
+await loadQuestConfigByKey('invalid-config');
+
+// Errors might include:
+// - "taskCount: Must match tasks array length"
+// - "tasks[5].type: Must be 'core', 'extra', or 'finish'"
+// - "map.markers[0].x: Must be between 0 and 100"
+```
 
 ### Handling Validation Errors
 
@@ -250,6 +316,30 @@ if (!result.isValid) {
   console.error('Configuration errors:', result.errors);
   console.warn('Configuration warnings:', result.warnings);
   // Configuration has been automatically fallen back to defaults
+}
+```
+
+### Creating a Valid Configuration
+
+See `/config-drops/README.md` for a complete guide on creating valid configurations.
+
+**Minimal Valid Configuration:**
+```json
+{
+  "name": "My Quest",
+  "taskCount": 3,
+  "tasks": [
+    { "id": 0, "label": "Start", "type": "core" },
+    { "id": 1, "label": "Task 1", "type": "core" },
+    { "id": 2, "label": "Finish", "type": "finish" }
+  ],
+  "finalTaskIds": [2],
+  "firstFinishTaskId": 2,
+  "finalFinishTaskId": 2,
+  "finishAnimations": {
+    "finalFinish": { "top": "38%", "left": "245%" },
+    "firstFinish": { "top": "130%", "left": "-75%" }
+  }
 }
 ```
 

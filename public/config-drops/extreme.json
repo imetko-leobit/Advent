@@ -1,0 +1,117 @@
+{
+  "name": "WELL BEING EXTREME QUEST",
+  "title": "WELL BEING EXTREME QUEST",
+  "taskCount": 14,
+  "tasks": [
+    {
+      "id": 0,
+      "label": "Start",
+      "type": "core"
+    },
+    {
+      "id": 1,
+      "label": "Mountain Climb",
+      "type": "core"
+    },
+    {
+      "id": 2,
+      "label": "Deep Meditation",
+      "type": "core"
+    },
+    {
+      "id": 3,
+      "label": "Cold Plunge",
+      "type": "core"
+    },
+    {
+      "id": 4,
+      "label": "Marathon Run",
+      "type": "core"
+    },
+    {
+      "id": 5,
+      "label": "Extreme Challenge",
+      "type": "extra"
+    },
+    {
+      "id": 6,
+      "label": "Extreme Challenge",
+      "type": "extra"
+    },
+    {
+      "id": 7,
+      "label": "Extreme Challenge",
+      "type": "extra"
+    },
+    {
+      "id": 8,
+      "label": "First Victory",
+      "type": "finish"
+    },
+    {
+      "id": 9,
+      "label": "Extreme Challenge",
+      "type": "extra"
+    },
+    {
+      "id": 10,
+      "label": "Extreme Challenge",
+      "type": "extra"
+    },
+    {
+      "id": 11,
+      "label": "Extreme Challenge",
+      "type": "extra"
+    },
+    {
+      "id": 12,
+      "label": "Extreme Challenge",
+      "type": "extra"
+    },
+    {
+      "id": 13,
+      "label": "Ultimate Champion",
+      "type": "finish"
+    }
+  ],
+  "finalTaskIds": [8, 13],
+  "firstFinishTaskId": 8,
+  "finalFinishTaskId": 13,
+  "finishAnimations": {
+    "finalFinish": {
+      "top": "38%",
+      "left": "245%"
+    },
+    "firstFinish": {
+      "top": "130%",
+      "left": "-75%"
+    }
+  },
+  "theme": {
+    "primary": "#ff3b30",
+    "secondary": "#ffd60a",
+    "accent": "#4cd964"
+  },
+  "map": {
+    "image": "/assets/maps/extreme-map.png",
+    "markers": [
+      {
+        "id": 1,
+        "label": "Start",
+        "x": 20,
+        "y": 80
+      },
+      {
+        "id": 2,
+        "label": "Challenge",
+        "x": 45,
+        "y": 70
+      }
+    ]
+  },
+  "rules": {
+    "steps": 14,
+    "maxDailyPoints": 7,
+    "completionReward": "🏆 Super Finisher Badge"
+  }
+}

@@ -9,6 +9,7 @@ import React, { useState } from "react";
 import { useConfig } from "../../context/ConfigContext";
 import { useDataSource } from "../../hooks/useDataSource";
 import { DataSourceType } from "../../services/types";
+import { QuestConfigType } from "../../configs/config.factory";
 
 export const ConfigDemo: React.FC = () => {
   const {
@@ -16,7 +17,10 @@ export const ConfigDemo: React.FC = () => {
     isLoading: configLoading,
     errors: configErrors,
     warnings: configWarnings,
+    currentConfigType,
+    availableConfigTypes,
     loadQuestConfigFromJSON,
+    loadQuestConfigByType,
     resetToDefaults,
   } = useConfig();
 
@@ -124,6 +128,9 @@ export const ConfigDemo: React.FC = () => {
         <p style={{ fontSize: "14px", color: "#666", margin: "5px 0" }}>
           <strong>Task Count:</strong> {questConfig.taskCount}
         </p>
+        <p style={{ fontSize: "14px", color: "#666", margin: "5px 0" }}>
+          <strong>Config Type:</strong> {currentConfigType}
+        </p>
         {configLoading && (
           <p style={{ fontSize: "14px", color: "#2196F3" }}>Loading config...</p>
         )}
@@ -166,6 +173,29 @@ export const ConfigDemo: React.FC = () => {
           </div>
         )}
         <div style={{ marginTop: "10px" }}>
+          <label style={{ fontSize: "14px", fontWeight: "bold", display: "block", marginBottom: "5px" }}>
+            Quest Theme:
+          </label>
+          <select
+            value={currentConfigType}
+            onChange={(e) => loadQuestConfigByType(e.target.value as QuestConfigType)}
+            disabled={configLoading}
+            style={{
+              width: "100%",
+              padding: "8px",
+              marginBottom: "10px",
+              fontSize: "14px",
+              borderRadius: "4px",
+              border: "1px solid #ccc",
+              cursor: configLoading ? "not-allowed" : "pointer",
+            }}
+          >
+            {availableConfigTypes.map((type) => (
+              <option key={type} value={type}>
+                {type.charAt(0).toUpperCase() + type.slice(1)} Quest
+              </option>
+            ))}
+          </select>
           <button
             onClick={handleLoadExampleConfig}
             disabled={configLoading}

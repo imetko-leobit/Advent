@@ -7,22 +7,22 @@
     "height": "100%"
   },
   "steps": [
-    { "taskNumber": 0, "cxPointers": 12, "cyPointers": 25, "cxStep": 13, "cyStep": 35, "icon": "/assets/icons/planet-0.svg" },
-    { "taskNumber": 1, "cxPointers": 25, "cyPointers": 45, "cxStep": 26, "cyStep": 55, "icon": "/assets/icons/planet-1.svg" },
-    { "taskNumber": 2, "cxPointers": 40, "cyPointers": 60, "cxStep": 41, "cyStep": 70, "icon": "/assets/icons/planet-2.svg" },
-    { "taskNumber": 3, "cxPointers": 55, "cyPointers": 68, "cxStep": 56, "cyStep": 78, "icon": "/assets/icons/planet-3.svg" },
-    { "taskNumber": 4, "cxPointers": 70, "cyPointers": 62, "cxStep": 71, "cyStep": 72, "icon": "/assets/icons/planet-4.svg" },
-    { "taskNumber": 5, "cxPointers": 80, "cyPointers": 45, "cxStep": 81, "cyStep": 55, "icon": "/assets/icons/planet-5.svg" },
-    { "taskNumber": 6, "cxPointers": 75, "cyPointers": 28, "cxStep": 76, "cyStep": 38, "icon": "/assets/icons/planet-6.svg" },
-    { "taskNumber": 7, "cxPointers": 60, "cyPointers": 18, "cxStep": 61, "cyStep": 28, "icon": "/assets/icons/planet-7.svg" },
-    { "taskNumber": 8, "cxPointers": 42, "cyPointers": 15, "cxStep": 43, "cyStep": 25, "icon": "/assets/icons/planet-8.svg" },
-    { "taskNumber": 9, "cxPointers": 28, "cyPointers": 22, "cxStep": 29, "cyStep": 32, "icon": "/assets/icons/planet-9.svg" }
+    { "taskNumber": 0, "cxPointers": 10, "cyPointers": 70, "cxStep": 11, "cyStep": 80, "icon": "/assets/icons/planet-0.svg" },
+    { "taskNumber": 1, "cxPointers": 18, "cyPointers": 52, "cxStep": 19, "cyStep": 62, "icon": "/assets/icons/planet-1.svg" },
+    { "taskNumber": 2, "cxPointers": 28, "cyPointers": 38, "cxStep": 29, "cyStep": 48, "icon": "/assets/icons/planet-2.svg" },
+    { "taskNumber": 3, "cxPointers": 42, "cyPointers": 28, "cxStep": 43, "cyStep": 38, "icon": "/assets/icons/planet-3.svg" },
+    { "taskNumber": 4, "cxPointers": 58, "cyPointers": 22, "cxStep": 59, "cyStep": 32, "icon": "/assets/icons/planet-4.svg" },
+    { "taskNumber": 5, "cxPointers": 72, "cyPointers": 28, "cxStep": 73, "cyStep": 38, "icon": "/assets/icons/planet-5.svg" },
+    { "taskNumber": 6, "cxPointers": 82, "cyPointers": 42, "cxStep": 83, "cyStep": 52, "icon": "/assets/icons/planet-6.svg" },
+    { "taskNumber": 7, "cxPointers": 88, "cyPointers": 58, "cxStep": 89, "cyStep": 68, "icon": "/assets/icons/planet-7.svg" },
+    { "taskNumber": 8, "cxPointers": 78, "cyPointers": 72, "cxStep": 79, "cyStep": 82, "icon": "/assets/icons/planet-8.svg" },
+    { "taskNumber": 9, "cxPointers": 62, "cyPointers": 78, "cxStep": 63, "cyStep": 88, "icon": "/assets/icons/planet-9.svg" }
   ],
   "theme": {
     "palette": {
-      "primary": "#1a237e",
-      "secondary": "#4a148c",
-      "accent": "#ffd700"
+      "primary": "#0a1128",
+      "secondary": "#1f4788",
+      "accent": "#00d9ff"
     },
     "pointerStyle": {
       "maxVisibleInTooltip": 5,
@@ -44,28 +44,41 @@
   },
   "animations": {
     "stars": [
-      { "top": "15%", "left": "20%", "height": "3%", "width": "3%", "duration": 1.5, "image": "/assets/animations/star.svg" },
-      { "top": "25%", "left": "75%", "height": "2.5%", "width": "2.5%", "duration": 1.2, "image": "/assets/animations/star.svg" },
-      { "top": "45%", "left": "10%", "height": "3.5%", "width": "3.5%", "duration": 1.8, "image": "/assets/animations/star.svg" },
-      { "top": "65%", "left": "85%", "height": "2%", "width": "2%", "duration": 1.0, "image": "/assets/animations/star.svg" },
-      { "top": "80%", "left": "30%", "height": "3%", "width": "3%", "duration": 1.4, "image": "/assets/animations/star.svg" },
-      { "top": "35%", "left": "90%", "height": "2.5%", "width": "2.5%", "duration": 1.1, "image": "/assets/animations/star.svg" },
-      { "top": "55%", "left": "5%", "height": "3%", "width": "3%", "duration": 1.6, "image": "/assets/animations/star.svg" },
-      { "top": "75%", "left": "65%", "height": "2.5%", "width": "2.5%", "duration": 1.3, "image": "/assets/animations/star.svg" }
+      { "top": "8%", "left": "12%", "height": "1.5%", "width": "1.5%", "duration": 2.0, "image": "/assets/animations/star.svg" },
+      { "top": "15%", "left": "25%", "height": "2.5%", "width": "2.5%", "duration": 1.8, "image": "/assets/animations/star.svg" },
+      { "top": "22%", "left": "8%", "height": "2%", "width": "2%", "duration": 1.3, "image": "/assets/animations/star.svg" },
+      { "top": "18%", "left": "72%", "height": "3%", "width": "3%", "duration": 1.6, "image": "/assets/animations/star.svg" },
+      { "top": "28%", "left": "88%", "height": "2.2%", "width": "2.2%", "duration": 1.4, "image": "/assets/animations/star.svg" },
+      { "top": "35%", "left": "5%", "height": "1.8%", "width": "1.8%", "duration": 1.9, "image": "/assets/animations/star.svg" },
+      { "top": "42%", "left": "15%", "height": "2.8%", "width": "2.8%", "duration": 1.5, "image": "/assets/animations/star.svg" },
+      { "top": "38%", "left": "92%", "height": "2%", "width": "2%", "duration": 1.7, "image": "/assets/animations/star.svg" },
+      { "top": "52%", "left": "4%", "height": "2.5%", "width": "2.5%", "duration": 1.2, "image": "/assets/animations/star.svg" },
+      { "top": "48%", "left": "95%", "height": "1.6%", "width": "1.6%", "duration": 2.1, "image": "/assets/animations/star.svg" },
+      { "top": "58%", "left": "22%", "height": "3.2%", "width": "3.2%", "duration": 1.4, "image": "/assets/animations/star.svg" },
+      { "top": "65%", "left": "6%", "height": "2%", "width": "2%", "duration": 1.8, "image": "/assets/animations/star.svg" },
+      { "top": "68%", "left": "35%", "height": "1.8%", "width": "1.8%", "duration": 1.6, "image": "/assets/animations/star.svg" },
+      { "top": "72%", "left": "85%", "height": "2.4%", "width": "2.4%", "duration": 1.3, "image": "/assets/animations/star.svg" },
+      { "top": "78%", "left": "12%", "height": "2.6%", "width": "2.6%", "duration": 1.9, "image": "/assets/animations/star.svg" },
+      { "top": "82%", "left": "48%", "height": "2.2%", "width": "2.2%", "duration": 1.5, "image": "/assets/animations/star.svg" },
+      { "top": "88%", "left": "28%", "height": "3%", "width": "3%", "duration": 1.7, "image": "/assets/animations/star.svg" },
+      { "top": "92%", "left": "68%", "height": "1.8%", "width": "1.8%", "duration": 2.0, "image": "/assets/animations/star.svg" },
+      { "top": "85%", "left": "92%", "height": "2.8%", "width": "2.8%", "duration": 1.4, "image": "/assets/animations/star.svg" },
+      { "top": "12%", "left": "45%", "height": "2%", "width": "2%", "duration": 1.6, "image": "/assets/animations/star.svg" }
     ],
     "clouds": [
-      { "top": "40%", "left": "50%", "height": "4%", "width": "6%", "duration": 8, "translateFrom": "-30%", "translateTo": "30%", "image": "/assets/animations/cloud.svg" },
-      { "top": "60%", "left": "20%", "height": "5%", "width": "7%", "duration": 10, "translateFrom": "-40%", "translateTo": "20%", "image": "/assets/animations/cloud.svg" },
-      { "top": "20%", "left": "80%", "height": "4.5%", "width": "6.5%", "duration": 9, "translateFrom": "-35%", "translateTo": "25%", "image": "/assets/animations/cloud.svg" }
+      { "top": "25%", "left": "55%", "height": "6%", "width": "8%", "duration": 12, "translateFrom": "-25%", "translateTo": "25%", "image": "/assets/animations/cloud.svg" },
+      { "top": "55%", "left": "15%", "height": "7%", "width": "9%", "duration": 15, "translateFrom": "-30%", "translateTo": "20%", "image": "/assets/animations/cloud.svg" },
+      { "top": "75%", "left": "72%", "height": "5.5%", "width": "7.5%", "duration": 10, "translateFrom": "-20%", "translateTo": "30%", "image": "/assets/animations/cloud.svg" },
+      { "top": "15%", "left": "82%", "height": "6.5%", "width": "8.5%", "duration": 13, "translateFrom": "-28%", "translateTo": "22%", "image": "/assets/animations/cloud.svg" }
     ],
     "character": {
       "enabled": true,
       "image": "/assets/animations/rocket.svg",
       "shadow": "/assets/animations/rocket-shadow.svg",
-      "position": { "left": "85%", "top": "15%", "height": "12%" },
-      "shadowPosition": { "left": "86%", "top": "24%", "height": "1.5%" },
-      "animation": { "translateFrom": "-5%", "translateTo": "0%", "duration": 3 },
-      "shadowAnimation": { "scaleFrom": 0.9, "scaleTo": 1.1, "duration": 3 }
+      "position": { "left": "85%", "top": "12%", "height": "14%" },
+      "shadowPosition": { "left": "86%", "top": "22%", "height": "1.8%" },
+      "animation": { "translateFrom": "-8%", "translateTo": "0%", "duration": 3.5 },
+      "shadowAnimation": { "scaleFrom": 0.85, "scaleTo": 1.15, "duration": 3.5 }
     }
   },
   "finishScreens": {

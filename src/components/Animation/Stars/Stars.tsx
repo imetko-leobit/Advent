@@ -6,11 +6,7 @@ import { useMemo } from "react";
 export const Stars = () => {
   const { uiConfig } = useUIConfig();
 
-  if (!uiConfig || !uiConfig.animations?.stars) {
-    return null;
-  }
-
-  const { stars } = uiConfig.animations;
+  const stars = uiConfig?.animations?.stars || [];
 
   // Group stars by duration for animation - memoized for performance
   const starGroups = useMemo(() => {
@@ -23,6 +19,10 @@ export const Stars = () => {
       return groups;
     }, {} as Record<number, UIStarConfig[]>);
   }, [stars]);
+
+  if (!uiConfig || !uiConfig.animations?.stars) {
+    return null;
+  }
 
   return (
     <div>

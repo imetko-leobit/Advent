@@ -104,6 +104,7 @@ export const UIConfigProvider: React.FC<UIConfigProviderProps> = ({ children }) 
 /**
  * Hook to access UI config context
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export const useUIConfig = (): UIConfigContextType => {
   const context = useContext(UIConfigContext);
   if (context === undefined) {
